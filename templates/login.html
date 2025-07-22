@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="auth-form">
+  <h2>登录</h2>
+  
+  {# 错误消息展示 #}
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="flash {{ category }}">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <form method="POST" action="{{ url_for('login') }}">
+    <div class="form-group">
+      <label>邮箱</label>
+      <input type="email" name="email" required>
+    </div>
+    <div class="form-group">
+      <label>密码</label>
+      <input type="password" name="password" required>
+    </div>
+    <div class="form-group">
+      <label>
+        <input type="checkbox" name="remember"> 记住我
+      </label>
+    </div>
+    <button type="submit">登录</button>
+  </form>
+
+  <div class="auth-links">
+    <p>没有账号？<a href="{{ url_for('signup') }}">去注册</a></p>
+    {# 预留密码重置链接 #}
+    <p><a href="#">忘记密码？</a></p>
+  </div>
+</div>
+{% endblock %}

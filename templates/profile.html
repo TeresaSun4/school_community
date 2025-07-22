@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container profile-container">
+    <div class="profile-header">
+        <div class="avatar-container">
+            {% if user.avatar %}
+                <img src="{{ url_for('static', filename='uploads/' + user.avatar) }}" class="avatar-large">
+            {% else %}
+                <div class="avatar-large avatar-initial">{{ user.username|first|upper }}</div>
+            {% endif %}
+            
+            {% if current_user == user %}
+                <form class="avatar-form" action="{{ url_for('upload_avatar') }}" method="POST" enctype="multipart/form-data">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                    <label class="btn" style="display: block; margin-top: 1rem; text-align: center;">
+                        <input type="file" name="avatar" accept="image/*" style="display: none;" onchange="this.form.submit()">
+                        Change Avatar
+                    </label>
+                </form>
+            {% endif %}
+        </div>
+        
+        <div class="profile-info">
+            <h1>{{ user.username }}</h1>
+            <p class="join-date">Joined: {{ user.created_at.strftime('%Y-%m-%d') }}</p>
+            
+            <div class="social-links">
+                <a href="#"><i class="fab fa-weixin"></i></a>
+                <a href="#"><i class="fab fa-qq"></i></a>
+                <a href="#"><i class="fab fa-github"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <div class="profile-stats">
+        <div class="stat">
+            <span class="count">{{ user.posts|count }}</span>
+            <span class="label">Posts</span>
+        </div>
+        <div class="stat">
+            <span class="count">{{ user.comments|count }}</span>
+            <span class="label">Comments</span>
+        </div>
+        <div class="stat">
+            <span class="count">{{ user.liked_posts.count() }}</span>
+            <span class="label">Likes</span>
+        </div>
+    </div>
+
+    <div class="profile-tabs">
+        <button class="tab-btn active" data-tab="posts">My Posts</button>
+        <button class="tab-btn" data-tab="comments">My Comments</button>
+    </div>
+
+    <div class="tab-content active" id="posts-tab">
+        {% if posts.items %}
+            <div class="posts-container">
+                {% for post in posts.items %}
+                    <div class="post-card">
+                        <div class="post-header">
+                            <div class="post-author">
+                                {% if post.author.avatar %}
+                                    <img src="{{ url_for('static', filename='uploads/' + post.author.avatar) }}" class="avatar-small">
+                                {% else %}
+                                    <div class="avatar-initial">{{ post.author.username|first|upper }}</div>
+                                {% endif %}
+                                <div class="author-info">
+                                    <span class="author-name">{{ post.author.username }}</span>
+                                    <span class="post-date">{{ post.created_at.strftime('%Y-%m-%d') }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <h3 class="post-title">
+                            <a href="{{ url_for('view_post', post_id=post.id) }}">{{ post.title }}</a>
+                        </h3>
+                        
+                        <p class="content-preview">{{ post.content|truncate(150) }}</p>
+                        
+                        <div class="post-footer">
+                            <div class="post-stats">
+                                <span class="likes">
+                                    <i class="far fa-heart"></i> {{ post.likes.count() }}
+                                </span>
+                                <span class="comments">
+                                    <i class="far fa-comment"></i> {{ post.comments|count }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class="pagination">
+                {% if posts.has_prev %}
+                    <a href="{{ url_for('profile', username=user.username, page=posts.prev_num) }}" class="btn">
+                        &laquo; Previous
+                    </a>
+                {% endif %}
+                
+                {% for page_num in posts.iter_pages() %}
+                    {% if page_num %}
+                        {% if page_num == posts.page %}
+                            <a href="{{ url_for('profile', username=user.username, page=page_num) }}" class="btn btn-primary">
+                                {{ page_num }}
+                            </a>
+                        {% else %}
+                            <a href="{{ url_for('profile', username=user.username, page=page_num) }}" class="btn">
+                                {{ page_num }}
+                            </a>
+                        {% endif %}
+                    {% else %}
+                        <span class="btn" style="border: none;">...</span>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if posts.has_next %}
+                    <a href="{{ url_for('profile', username=user.username, page=posts.next_num) }}" class="btn">
+                        Next &raquo;
+                    </a>
+                {% endif %}
+            </div>
+        {% else %}
+            <div class="no-content">
+                <i class="far fa-newspaper" style="font-size: 3rem; color: var(--accent); margin-bottom: 1rem;"></i>
+                <p>No posts yet</p>
+                {% if current_user == user %}
+                    <a href="{{ url_for('create_post') }}" class="btn btn-primary" style="margin-top: 1rem;">
+                        Create your first post
+                    </a>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="tab-content" id="comments-tab">
+        {% if user.comments %}
+            <div class="comments-list">
+                {% for comment in user.comments[-5:] %}
+                    <div class="comment-item">
+                        <p class="comment-meta">
+                            Commented on <a href="{{ url_for('view_post', post_id=comment.post.id) }}#comment-{{ comment.id }}">{{ comment.post.title }}</a> ·
+                            {{ comment.created_at.strftime('%Y-%m-%d') }}
+                        </p>
+                        <p class="comment-content">{{ comment.content }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="no-content">
+                <i class="far fa-comment-dots" style="font-size: 3rem; color: var(--accent); margin-bottom: 1rem;"></i>
+                <p>No comments yet</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+{% block scripts %}
+<script>
+    // Tab switching functionality
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            // Remove all active classes
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            
+            // Add active class to current button and corresponding content
+            btn.classList.add('active');
+            const tabId = btn.getAttribute('data-tab') + '-tab';
+            document.getElementById(tabId).classList.add('active');
+        });
+    });
+</script>
+{% endblock %}
+{% endblock %}

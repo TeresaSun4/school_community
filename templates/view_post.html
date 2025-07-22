@@ -1,0 +1,238 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+  <div class="post-detail card">
+    <div class="post-header">
+      <span class="category-badge">{{ post.category|default('general') }}</span>
+      <h1>{{ post.title }}</h1>
+      <div class="post-meta">
+        <a href="{{ url_for('profile', username=post.author.username) }}" class="author">
+          {% if post.author.avatar %}
+            <img src="{{ url_for('static', filename='uploads/' + post.author.avatar) }}" class="avatar-small">
+          {% else %}
+            <i class="fas fa-user-circle"></i>
+          {% endif %}
+          {{ post.author.username }}
+        </a>
+        <span class="date">{{ post.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
+      </div>
+    </div>
+
+    <div class="post-content">
+      {{ post.content }}
+    </div>
+
+    <div class="post-footer">
+      <form method="POST" action="{{ url_for('like_post', post_id=post.id) }}" class="like-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+        <button type="submit" class="like-btn">
+          {% if current_user.is_authenticated and current_user.has_liked_post(post) %}
+            <i class="fas fa-heart"></i> Liked ({{ post.likes.count() }})
+          {% else %}
+            <i class="far fa-heart"></i> Like ({{ post.likes.count() }})
+          {% endif %}
+        </button>
+      </form>
+
+      <span class="view-count"><i class="fas fa-eye"></i> {{ post.view_count|default(0) }} Views</span>
+
+      <div class="social-share">
+        <span>Share:</span>
+        <a href="#" class="share-btn"><i class="fas fa-share-alt"></i></a>
+      </div>
+    </div>
+
+    <div class="comments-section">
+      <h3><i class="fas fa-comments"></i> Comments ({{ post.comments|count }})</h3>
+
+      {% if current_user.is_authenticated %}
+        <form method="POST" action="{{ url_for('add_comment', post_id=post.id) }}" class="comment-form">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+          <div class="form-group">
+            <textarea name="content" placeholder="Write your comment..." minlength="3" required></textarea>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="submit-btn">Submit Comment</button>
+          </div>
+        </form>
+      {% else %}
+        <div class="login-prompt">
+          Please <a href="{{ url_for('login') }}">login</a> to comment
+        </div>
+      {% endif %}
+
+      <div class="comments-list">
+        {% for comment in post.comments %}
+          <div class="comment" id="comment-{{ comment.id }}">
+            <div class="comment-header">
+              <a href="{{ url_for('profile', username=comment.author.username) }}" class="comment-author">
+                {% if comment.author.avatar %}
+                  <img src="{{ url_for('static', filename='uploads/' + comment.author.avatar) }}" class="avatar-small">
+                {% else %}
+                  <i class="fas fa-user-circle"></i>
+                {% endif %}
+                {{ comment.author.username }}
+              </a>
+              <span class="comment-date">{{ comment.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
+            </div>
+            <div class="comment-content">
+              {{ comment.content }}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+<div class="container">
+  <div class="post-detail card">
+    <div class="post-header">
+      <span class="category-badge">{{ post.category|default('general') }}</span>
+      <h1>{{ post.title }}</h1>
+      <div class="post-meta">
+        <a href="{{ url_for('profile', username=post.author.username) }}" class="author">
+          {% if post.author.avatar %}
+            <img src="{{ url_for('static', filename='uploads/' + post.author.avatar) }}" class="avatar-small">
+          {% else %}
+            <i class="fas fa-user-circle"></i>
+          {% endif %}
+          {{ post.author.username }}
+        </a>
+        <span class="date">{{ post.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
+        {% if current_user == post.author %}
+          <!-- Edit and delete features not implemented yet
+          <div class="post-actions">
+            <a href="#" class="edit-btn">Edit</a>
+            <form method="POST" action="#" class="delete-form">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+              <button type="submit" class="delete-btn">Delete</button>
+            </form>
+          </div>
+          -->
+        {% endif %}
+      </div>
+    </div>
+    
+    <div class="post-content">
+      {{ post.content }}
+      
+      {% if post.images %}
+        <div class="post-images">
+          {% for image in post.images %}
+            <a href="{{ url_for('static', filename='uploads/posts/' + image.filename) }}" data-lightbox="post-images">
+              <img src="{{ url_for('static', filename='uploads/posts/' + image.filename) }}" alt="帖子图片">
+            </a>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+    
+    <div class="post-footer">
+      <form method="POST" action="{{ url_for('like_post', post_id=post.id) }}" class="like-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+        <button type="submit" class="like-btn">
+          {% if current_user.is_authenticated and post in current_user.liked_posts %}
+            <i class="fas fa-heart"></i> Liked ({{ post.likes.count() }})
+          {% else %}
+            <i class="far fa-heart"></i> Like ({{ post.likes.count() }})
+          {% endif %}
+        </button>
+      </form>
+      
+      <span class="view-count"><i class="fas fa-eye"></i> {{ post.view_count|default(0) }} Views</span>
+      
+      <div class="social-share">
+        <span>Share:</span>
+        <a href="#" class="wechat-share"><i class="fab fa-weixin"></i></a>
+        <a href="#" class="weibo-share"><i class="fab fa-weibo"></i></a>
+        <a href="#" class="qq-share"><i class="fab fa-qq"></i></a>
+      </div>
+    </div>
+    
+    <div class="comments-section">
+      <h3><i class="fas fa-comments"></i> Comments ({{ post.comments|count if post.comments is defined else 0 }})</h3>
+      
+      {% if current_user.is_authenticated %}
+        <form method="POST" action="{{ url_for('add_comment', post_id=post.id) }}" class="comment-form">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+          <div class="form-group">
+            <textarea name="content" placeholder="Write your comment..." minlength="3" required></textarea>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="submit-btn">Submit Comment</button>
+            <button type="button" class="emoji-btn"><i class="far fa-smile"></i></button>
+          </div>
+        </form>
+      {% else %}
+        <div class="login-prompt">
+          Please <a href="{{ url_for('login') }}">login</a> to comment
+        </div>
+      {% endif %}
+      
+      <div class="comments-list">
+        {% for comment in post.comments %}
+          <div class="comment" id="comment-{{ comment.id }}">
+            <div class="comment-header">
+              <a href="{{ url_for('profile', username=comment.author.username) }}" class="comment-author">
+                {% if comment.author.avatar %}
+                  <img src="{{ url_for('static', filename='uploads/' + comment.author.avatar) }}" class="avatar-small">
+                {% else %}
+                  <i class="fas fa-user-circle"></i>
+                {% endif %}
+                {{ comment.author.username }}
+              </a>
+              <span class="comment-date">{{ comment.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
+              {% if current_user == comment.author or current_user == post.author %}
+                <!-- Delete comment feature not implemented yet
+                <form method="POST" action="#" class="delete-comment-form">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                  <button type="submit" class="delete-btn"><i class="fas fa-trash-alt"></i></button>
+                </form>
+                -->
+              {% endif %}
+            </div>
+            <div class="comment-content">
+              {{ comment.content }}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Emoji selector
+  document.querySelector('.emoji-btn')?.addEventListener('click', function() {
+    // You can integrate an emoji selector plugin here
+    alert('Emoji selector will be added in a future update');
+  });
+
+  // Image lightbox effect
+  if(document.querySelector('[data-lightbox]')) {
+    // You can integrate a lightbox plugin here
+    document.querySelectorAll('[data-lightbox]').forEach(img => {
+      img.addEventListener('click', function(e) {
+        e.preventDefault();
+        // Simple image viewer implementation
+        const overlay = document.createElement('div');
+        overlay.className = 'image-overlay';
+        overlay.innerHTML = `
+          <div class="image-container">
+            <img src="${this.href}">
+            <button class="close-btn">&times;</button>
+          </div>
+        `;
+        overlay.querySelector('.close-btn').addEventListener('click', function() {
+          overlay.remove();
+        });
+        document.body.appendChild(overlay);
+      });
+    });
+  }
+</script>
+{% endblock %}

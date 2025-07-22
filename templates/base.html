@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#6D8B74">
+    <title>Campus Community | {% block title %}{% endblock %}</title>
+    <!-- Favicon - 简单图标 -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏫</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <header class="navbar">
+        <div class="container">
+            <a href="{{ url_for('index') }}" class="logo">
+                <i class="fas fa-school"></i>
+                <span>Campus Community</span>
+            </a>
+            
+            <nav class="nav-links">
+                <form class="search-box" action="{{ url_for('search') }}">
+                    <input type="text" name="q" placeholder="Search..." value="{{ request.args.get('q', '') }}">
+                    <button type="submit"><i class="fas fa-search"></i></button>
+                </form>
+                
+                {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('create_post') }}" class="nav-button primary">
+                        <i class="fas fa-plus"></i> Post
+                    </a>
+                    <div class="user-dropdown">
+                        <button class="user-menu">
+                            {% if current_user.avatar %}
+                                <img src="{{ url_for('static', filename='uploads/' + current_user.avatar) }}" class="avatar-small">
+                            {% else %}
+                                <div class="avatar-initial">{{ current_user.username|first|upper }}</div>
+                            {% endif %}
+                            {{ current_user.username }}
+                        </button>
+                        <div class="dropdown-content">
+                            <a href="{{ url_for('profile', username=current_user.username) }}"><i class="fas fa-user"></i> My Profile</a>
+                            <a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                        </div>
+                    </div>
+                {% else %}
+                    <a href="{{ url_for('login') }}" class="nav-button">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </a>
+                    <a href="{{ url_for('signup') }}" class="nav-button primary">
+                        <i class="fas fa-user-plus"></i> Sign Up
+                    </a>
+                {% endif %}
+            </nav>
+            
+            <button class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </header>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-container">
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">
+                        <span>{{ message }}</span>
+                        <button class="flash-close">&times;</button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>Campus Community - Connecting your campus life</p>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile menu toggle
+        document.querySelector('.mobile-menu-btn')?.addEventListener('click', () => {
+            document.querySelector('.nav-links').classList.toggle('active');
+        });
+
+        // Close flash messages
+        document.querySelectorAll('.flash-close').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.target.closest('.flash').remove();
+            });
+        });
+
+        // User dropdown menu
+        document.querySelector('.user-menu')?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            document.querySelector('.dropdown-content').classList.toggle('show');
+        });
+
+        // Close dropdown when clicking elsewhere
+        window.addEventListener('click', () => {
+            document.querySelector('.dropdown-content')?.classList.remove('show');
+        });
+    </script>
+    
+    {% block scripts %}{% endblock %}
+</body>
+</html>

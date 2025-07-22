@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container search-page">
+  <div class="search-header">
+    <h2>Search: "{{ query }}"</h2>
+    <form class="search-form" action="{{ url_for('search') }}">
+      <input type="text" name="q" value="{{ query }}" placeholder="Search posts..." required>
+      <button type="submit"><i class="fas fa-search"></i> Search</button>
+    </form>
+    
+    <div class="search-filters">
+      <span>Sort by:</span>
+      <a href="{{ url_for('search', q=query, sort='newest') }}" class="{{ 'active' if request.args.get('sort') == 'newest' }}">Newest</a>
+      <a href="{{ url_for('search', q=query, sort='popular') }}" class="{{ 'active' if request.args.get('sort') == 'popular' }}">Popular</a>
+    </div>
+  </div>
+
+  {% if posts and posts.items %}
+    <div class="search-results">
+      {% for post in posts.items %}
+        <div class="result-item">
+          <div class="result-header">
+            <span class="author">{{ post.author.username }}</span>
+            <span class="date">{{ post.created_at.strftime('%Y-%m-%d') }}</span>
+            <span class="category">{{ post.category }}</span>
+          </div>
+          
+          <h3><a href="{{ url_for('view_post', post_id=post.id) }}">{{ post.title }}</a></h3>
+          
+          <div class="result-content">
+            <p class="excerpt">{{ post.content|truncate(200) }}</p>
+            {% if query in post.content %}
+              <div class="highlight-matches">
+                {% for match in post.content|highlight(query) %}
+                  <p>...{{ match }}...</p>
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+          
+          <div class="result-footer">
+            <span class="likes">
+              <form method="POST" action="{{ url_for('like_post', post_id=post.id) }}" style="display:inline;">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                <button type="submit" class="like-btn">
+                  {% if current_user.is_authenticated and post in current_user.liked_posts %}
+                    ♥️ {{ post.likes.count() }}
+                  {% else %}
+                    ♡ {{ post.likes.count() }}
+                  {% endif %}
+                </button>
+              </form>
+            </span>
+            <span class="comments">💬 {{ post.comments|count }}</span>
+          </div> <!-- result-footer -->
+        </div> <!-- result-item -->
+      {% endfor %}
+    </div> <!-- search-results -->
+
+    <div class="pagination">
+      {% if posts.has_prev %}
+        <a href="{{ url_for('search', q=query, page=posts.prev_num, sort=request.args.get('sort')) }}">&laquo; Previous</a>
+      {% endif %}
+      
+      {% for page_num in posts.iter_pages() %}
+        {% if page_num %}
+          {% if page_num == posts.page %}
+            <a class="active" href="{{ url_for('search', q=query, page=page_num, sort=request.args.get('sort')) }}">{{ page_num }}</a>
+          {% else %}
+            <a href="{{ url_for('search', q=query, page=page_num, sort=request.args.get('sort')) }}">{{ page_num }}</a>
+          {% endif %}
+        {% else %}
+          <span class="ellipsis">...</span>
+        {% endif %}
+      {% endfor %}
+      
+      {% if posts.has_next %}
+        <a href="{{ url_for('search', q=query, page=posts.next_num, sort=request.args.get('sort')) }}">Next &raquo;</a>
+      {% endif %}
+    </div> <!-- pagination -->
+  {% elif query %}
+    <div class="no-results">
+      <i class="fas fa-search"></i>
+      <p>No posts found related to "{{ query }}"</p>
+      <a href="{{ url_for('create_post') }}" class="btn">Create New Post</a>
+    </div> <!-- no-results -->
+  {% else %}
+    <div class="no-results">
+      <i class="fas fa-search"></i>
+      <p>Please enter search keywords</p>
+    </div> <!-- no-results -->
+  {% endif %}
+</div> <!-- container search-page -->
+{% endblock %}

@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{# Jinja注释：这个模板显示单个帖子的详细信息，包括评论和点赞功能 #}
+{% block content %}
+<div class="container">
+  <!-- 帖子详情卡片 -->
+  <div class="post-detail card">
+    <!-- 帖子标题和元数据部分 -->
+    <div class="post-header">
+      <span class="category-badge">{{ post.category|default('general') }}</span>
+      <h1>{{ post.title }}</h1>
+      <div class="post-meta">
+        <a href="{{ url_for('profile', username=post.author.username) }}" class="author">
+          {% if post.author.avatar %}
+            <img src="{{ url_for('static', filename='uploads/' + post.author.avatar) }}" class="avatar-small">
+          {% else %}
+            <i class="fas fa-user-circle"></i>
+          {% endif %}
+          {{ post.author.username }}
+        </a>
+        <span class="date">{{ post.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
+      </div> <!-- /.post-meta -->
+    </div> <!-- /.post-header -->
+
+    <!-- 帖子内容部分 -->
+    <div class="post-content">
+      {{ post.content }}
+    </div> <!-- /.post-content -->
+
+    <!-- 帖子底部操作栏 - 点赞和查看计数 -->
+    <div class="post-footer">
+      <!-- 点赞表单 - 使用many-to-many关系实现用户-帖子点赞功能 -->
+      <form method="POST" action="{{ url_for('like_post', post_id=post.id) }}" style="display: inline;">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+        <button type="submit" class="like-btn">
+          {% if current_user.is_authenticated and current_user.has_liked_post(post) %}
+            <i class="fas fa-heart" style="color: red;"></i> Liked ({{ post.likes.count() }})
+          {% else %}
+            <i class="far fa-heart"></i> Like ({{ post.likes.count() }})
+          {% endif %}
+        </button>
+      </form>
+
+      <span class="view-count"><i class="fas fa-eye"></i> Views</span>
+    </div> <!-- /.post-footer -->
+
+    <!-- 评论区域 -->
+    <div class="comments-section">
+      <h3><i class="fas fa-comments"></i> Comments</h3>
+
+      <!-- 评论表单 - 仅登录用户可见 -->
+      {% if current_user.is_authenticated %}
+        <form method="POST" action="{{ url_for('add_comment', post_id=post.id) }}" class="comment-form">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+          <div class="form-group">
+            <textarea name="content" placeholder="Write your comment..." minlength="3" required></textarea>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="submit-btn">Submit Comment</button>
+          </div>
+        </form>
+      {% else %}
+        <!-- 未登录用户提示 -->
+        <div class="login-prompt">
+          Please <a href="{{ url_for('login') }}">login</a> to comment
+        </div>
+      {% endif %}
+
+      <!-- 评论列表 -->
+      <div class="comments-list">
+        {% for comment in post.comments %}
+          <div class="comment">
+            <div class="comment-header">
+              <a href="{{ url_for('profile', username=comment.author.username) }}" class="comment-author">
+                {{ comment.author.username }}
+              </a>
+              <span class="comment-date">{{ comment.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
+            </div> <!-- /.comment-header -->
+            <div class="comment-content">
+              {{ comment.content }}
+            </div> <!-- /.comment-content -->
+          </div> <!-- /.comment -->
+        {% endfor %}
+      </div> <!-- /.comments-list -->
+    </div> <!-- /.comments-section -->
+  </div> <!-- /.post-detail -->
+</div> <!-- /.container -->
+{% endblock %}
+{% endblock %}

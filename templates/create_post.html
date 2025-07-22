@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+  <div class="create-post-card card">
+    <h2>发新帖</h2>
+    
+    {# 错误消息显示 #}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="flash {{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST" class="post-form" enctype="multipart/form-data">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+      
+      <div class="form-group">
+        <label for="title">标题</label>
+        <input 
+          type="text" 
+          id="title" 
+          name="title" 
+          placeholder="请输入标题（5-100字）" 
+          minlength="5"
+          maxlength="100"
+          required
+        >
+      </div>
+      
+      <div class="form-group">
+        <label for="category">分类</label>
+        <select id="category" name="category" class="form-control">
+          <option value="general" selected>普通</option>
+          <option value="question">问题求助</option>
+          <option value="discussion">讨论交流</option>
+          <option value="announcement">公告通知</option>
+          <option value="resource">学习资源</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="content">内容</label>
+        <textarea 
+          id="content" 
+          name="content" 
+          placeholder="分享你的想法..." 
+          minlength="10"
+          required
+        ></textarea>
+        <div class="form-footer">
+          <div class="char-counter"><span id="char-count">0</span>/1000</div>
+          <small>支持Markdown格式</small>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="images">上传图片（可选）</label>
+        <input type="file" id="images" name="images" multiple accept="image/*">
+        <small class="form-text">最多可上传3张图片（每张不超过2MB）</small>
+      </div>
+      
+      <div class="form-actions">
+        <button type="submit" class="submit-btn">发布</button>
+        <a href="{{ url_for('index') }}" class="cancel-btn">取消</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // 实时字符计数
+  document.getElementById('content').addEventListener('input', function(e) {
+    const count = e.target.value.length;
+    document.getElementById('char-count').textContent = count;
+    
+    // 超过限制显示警告
+    if(count > 1000) {
+      document.getElementById('char-count').style.color = 'var(--error)';
+    } else {
+      document.getElementById('char-count').style.color = '';
+    }
+  });
+
+  // 图片上传预览
+  document.getElementById('images').addEventListener('change', function(e) {
+    const files = e.target.files;
+    const previewContainer = document.getElementById('image-preview');
+    
+    if(!previewContainer) {
+      const container = document.createElement('div');
+      container.id = 'image-preview';
+      container.className = 'image-preview';
+      document.querySelector('.form-group:last-child').after(container);
+    } else {
+      previewContainer.innerHTML = '';
+    }
+    
+    if(files.length > 3) {
+      alert('最多只能上传3张图片');
+      e.target.value = '';
+      return;
+    }
+    
+    for(let i = 0; i < Math.min(files.length, 3); i++) {
+      const file = files[i];
+      if(file.size > 2 * 1024 * 1024) {
+        alert(`图片 "${file.name}" 超过2MB限制`);
+        e.target.value = '';
+        return;
+      }
+      
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        const preview = document.createElement('div');
+        preview.className = 'preview-item';
+        preview.innerHTML = `
+          <img src="${event.target.result}" alt="预览">
+          <button type="button" class="remove-btn">&times;</button>
+        `;
+        preview.querySelector('.remove-btn').addEventListener('click', function() {
+          preview.remove();
+          // 这里需要处理实际文件删除逻辑
+        });
+        document.getElementById('image-preview').appendChild(preview);
+      }
+      reader.readAsDataURL(file);
+    }
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h1 class="main-title">学校社区</h1>
+    
+    {% if current_user.is_authenticated %}
+        <a href="{{ url_for('create_post') }}" class="btn btn-primary" style="margin-bottom: 2rem;">
+            <i class="fas fa-plus"></i> 发新帖
+        </a>
+    {% endif %}
+
+    <div class="posts-container">
+        {% for post in posts.items %}
+            <div class="post-card">
+                <div class="post-header">
+                    <div class="post-author">
+                        {% if post.author.avatar %}
+                            <img src="{{ url_for('static', filename='uploads/' + post.author.avatar) }}" class="avatar-small">
+                        {% else %}
+                            <div class="avatar-initial">{{ post.author.username|first|upper }}</div>
+                        {% endif %}
+                        <div class="author-info">
+                            <span class="author-name">{{ post.author.username }}</span>
+                            <span class="post-date">{{ post.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
+                        </div>
+                    </div>
+                    <span class="category-tag">{{ post.category }}</span>
+                </div>
+                
+                <div class="post-content">
+                    <h3 class="post-title">
+                        <a href="{{ url_for('view_post', post_id=post.id) }}">{{ post.title }}</a>
+                    </h3>
+                    <p class="content-preview">{{ post.content|truncate(150) }}</p>
+                </div>
+                
+                <div class="post-footer">
+                    <div class="post-stats">
+                        <form method="POST" action="{{ url_for('like_post', post_id=post.id) }}" style="display: inline;">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                            <button type="submit" class="like-btn">
+                                {% if current_user.is_authenticated and post in current_user.liked_posts %}
+                                    <i class="fas fa-heart"></i> {{ post.likes|length }}
+                                {% else %}
+                                    <i class="far fa-heart"></i> {{ post.likes|length }}
+                                {% endif %}
+                            </button>
+                        </form>
+                        <a href="{{ url_for('view_post', post_id=post.id) }}#comments" class="comment-btn">
+                            <i class="far fa-comment"></i> {{ post.comments|length }}
+                        </a>
+                    </div>
+                    <a href="{{ url_for('view_post', post_id=post.id) }}" class="read-more">阅读更多 →</a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    {% if posts.pages > 1 %}
+        <div class="pagination">
+            {% if posts.has_prev %}
+                <a href="{{ url_for('index', page=posts.prev_num) }}" class="btn">
+                    &laquo; 上一页
+                </a>
+            {% endif %}
+            
+            {% for page_num in posts.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+                {% if page_num %}
+                    {% if posts.page == page_num %}
+                        <a href="{{ url_for('index', page=page_num) }}" class="btn btn-primary">
+                            {{ page_num }}
+                        </a>
+                    {% else %}
+                        <a href="{{ url_for('index', page=page_num) }}" class="btn">
+                            {{ page_num }}
+                        </a>
+                    {% endif %}
+                {% else %}
+                    <span class="btn" style="border: none;">...</span>
+                {% endif %}
+            {% endfor %}
+            
+            {% if posts.has_next %}
+                <a href="{{ url_for('index', page=posts.next_num) }}" class="btn">
+                    下一页 &raquo;
+                </a>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
