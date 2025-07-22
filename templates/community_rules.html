@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+
+{% block title %}Community Rules{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1>Community Rules</h1>
+        <p class="subtitle">To maintain a healthy and positive community environment, all users must follow these rules</p>
+    </div>
+
+    <div class="rules-container">
+        <div class="rule-section">
+            <h2><i class="fas fa-handshake"></i> Core Principles</h2>
+            <div class="rule-item">
+                <h3>Mutual Respect</h3>
+                <p>Respect all community members regardless of their background, opinions, or identity. Discrimination, harassment, or insulting behavior will not be tolerated.</p>
+            </div>
+            <div class="rule-item">
+                <h3>Honesty and Integrity</h3>
+                <p>Maintain honesty and do not post false information or misleading content. Respect the intellectual property of others and do not infringe on copyrights.</p>
+            </div>
+            <div class="rule-item">
+                <h3>Constructive Communication</h3>
+                <p>Maintain a constructive attitude when participating in discussions, and remain civil and polite even when disagreements arise.</p>
+            </div>
+        </div>
+
+        <div class="rule-section">
+            <h2><i class="fas fa-ban"></i> Prohibited Behaviors</h2>
+            <div class="rule-item">
+                <h3>Harmful Content</h3>
+                <p>Posting violent, pornographic, discriminatory, hateful, or other content that may cause harm to others is prohibited.</p>
+            </div>
+            <div class="rule-item">
+                <h3>Spam</h3>
+                <p>Posting spam advertisements, repetitive content, or irrelevant content is prohibited.</p>
+            </div>
+            <div class="rule-item">
+                <h3>Illegal Content</h3>
+                <p>Posting any content that violates local laws and regulations is prohibited.</p>
+            </div>
+            <div class="rule-item">
+                <h3>Sensitive Information</h3>
+                <p>Do not post personal private information of others, including but not limited to phone numbers, addresses, emails, etc.</p>
+            </div>
+            <div class="rule-item">
+                <h3>Multi-Account Abuse</h3>
+                <p>Creating multiple accounts for malicious activities such as manipulating likes or spamming comments is prohibited.</p>
+            </div>
+        </div>
+
+        <div class="rule-section">
+            <h2><i class="fas fa-shield-alt"></i> Content Guidelines</h2>
+            <div class="rule-item">
+                <h3>Relevance</h3>
+                <p>Content posted should be relevant to the selected category, ensuring information is accurate and valuable.</p>
+            </div>
+            <div class="rule-item">
+                <h3>Clear Expression</h3>
+                <p>Try to use clear and concise language to express your meaning, avoiding excessive jargon or technical terms.</p>
+            </div>
+            <div class="rule-item">
+                <h3>Appropriate Titles</h3>
+                <p>Use titles that accurately describe content, avoiding all-caps or excessive punctuation.</p>
+            </div>
+        </div>
+
+        <div class="rule-section">
+            <h2><i class="fas fa-gavel"></i> Violation Handling</h2>
+            <div class="rule-item">
+                <h3>Progressive Handling</h3>
+                <p>Violations will be handled according to severity, ranging from warnings to permanent access bans.</p>
+            </div>
+            <div class="rule-item">
+                <h3>Appeal Mechanism</h3>
+                <p>If you believe you have been wrongfully penalized, you can appeal by contacting the administrators.</p>
+            </div>
+            <div class="rule-item">
+                <h3>Rule Updates</h3>
+                <p>Community rules may be updated at any time, and users are responsible for regularly checking the latest rules.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="rules-footer">
+        <p>Last updated: {{ now.strftime('%Y-%m-%d') }}</p>
+        <p>If you have any questions, please contact the administrator: <a href="mailto:admin@example.com">admin@example.com</a></p>
+    </div>
+</div>
+{% endblock %}
+
+{% block head %}
+<style>
+    /* Community Rules page styles */
+    .page-header {
+        text-align: center;
+        margin: 40px 0;
+        color: var(--primary);
+    }
+
+    .subtitle {
+        font-size: 1.1rem;
+        color: var(--gray-500);
+        margin-top: 10px;
+    }
+
+    .rules-container {
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 15px var(--morandi-shadow);
+        padding: 30px;
+        margin-bottom: 40px;
+    }
+
+    .rule-section {
+        margin-bottom: 40px;
+    }
+
+    .rule-section h2 {
+        color: var(--primary);
+        font-size: 1.5rem;
+        border-bottom: 2px solid var(--primary-light);
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+    }
+
+    .rule-section h2 i {
+        margin-right: 10px;
+        color: var(--secondary);
+    }
+
+    .rule-item {
+        margin-bottom: 25px;
+        padding-left: 15px;
+        border-left: 3px solid var(--secondary-light);
+    }
+
+    .rule-item h3 {
+        color: var(--secondary-dark);
+        font-size: 1.2rem;
+        margin-bottom: 10px;
+    }
+
+    .rule-item p {
+        color: var(--text);
+        line-height: 1.6;
+    }
+
+    .rules-footer {
+        text-align: center;
+        color: var(--gray-500);
+        font-size: 0.9rem;
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid var(--gray-200);
+    }
+
+    @media (max-width: 768px) {
+        .rules-container {
+            padding: 20px;
+        }
+
+        .rule-section h2 {
+            font-size: 1.3rem;
+        }
+
+        .rule-item h3 {
+            font-size: 1.1rem;
+        }
+    }
+</style>
+{% endblock %}

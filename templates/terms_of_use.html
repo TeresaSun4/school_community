@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+
+{% block title %}Terms of Use{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1>Terms of Use</h1>
+        <p class="subtitle">Please read the following terms carefully before using our platform</p>
+    </div>
+
+    <div class="terms-container">
+        <div class="terms-section">
+            <h2>1. Acceptance of Terms</h2>
+            <p>By accessing or using the Campus Community platform, you agree to be bound by these Terms of Use. If you do not agree to any part of these terms, please do not use our services.</p>
+        </div>
+
+        <div class="terms-section">
+            <h2>2. Service Description</h2>
+            <p>Campus Community is a campus social platform that allows users to create profiles, post content, interact with other users, and participate in various features offered by the platform.</p>
+        </div>
+
+        <div class="terms-section">
+            <h2>3. User Accounts</h2>
+            <p>3.1 You must be at least 13 years old to use our services.</p>
+            <p>3.2 You must provide accurate, complete, and up-to-date personal information.</p>
+            <p>3.3 You are responsible for maintaining the security of your account password and for all activities that occur under your account.</p>
+            <p>3.4 You must notify us immediately of any unauthorized use of your account.</p>
+        </div>
+
+        <div class="terms-section">
+            <h2>4. User Content</h2>
+            <p>4.1 You retain all rights to the content you post on the platform ("User Content").</p>
+            <p>4.2 By posting content on the platform, you grant us a non-exclusive, royalty-free, transferable, sub-licensable right to use, reproduce, modify, create derivative works from, distribute, and display such content.</p>
+            <p>4.3 You represent and warrant that you own or have obtained all rights and permissions necessary to post your User Content.</p>
+            <p>4.4 We are not responsible for User Content and do not endorse any views, opinions, or advice expressed in User Content.</p>
+        </div>
+
+        <div class="terms-section">
+            <h2>5. Prohibited Conduct</h2>
+            <p>You agree not to:</p>
+            <ul>
+                <li>Violate any applicable laws or regulations.</li>
+                <li>Post false, misleading, fraudulent, or deceptive content.</li>
+                <li>Post content that infringes upon the intellectual property, privacy rights, or other rights of others.</li>
+                <li>Post content containing viruses, malware, or other harmful code.</li>
+                <li>Use automated programs (such as bots) to access the platform without our explicit permission.</li>
+                <li>Attempt to interfere with or disrupt the functionality or security of the platform.</li>
+                <li>Harass, intimidate, or threaten other users.</li>
+            </ul>
+        </div>
+
+        <div class="terms-section">
+            <h2>6. Content Moderation</h2>
+            <p>6.1 We reserve the right to review, screen, edit, or remove any User Content.</p>
+            <p>6.2 We do not guarantee pre-screening of all content but reserve the right to take appropriate measures after finding violations.</p>
+        </div>
+
+        <div class="terms-section">
+            <h2>7. Privacy Policy</h2>
+            <p>Our Privacy Policy describes how we collect, use, and protect your personal information. By using our services, you agree to our processing of your information according to the Privacy Policy.</p>
+        </div>
+
+        <div class="terms-section">
+            <h2>8. Service Changes</h2>
+            <p>We reserve the right to modify, suspend, or discontinue the service (or any part thereof) at any time without notice.</p>
+        </div>
+
+        <div class="terms-section">
+            <h2>9. Term Modifications</h2>
+            <p>We may modify these terms from time to time. Modified terms will be effective immediately upon posting on the platform. Continued use of our services constitutes acceptance of the modified terms.</p>
+        </div>
+
+        <div class="terms-section">
+            <h2>10. Disclaimer</h2>
+            <p>Our services are provided on an "as is" and "as available" basis, without any warranties of any kind. We do not guarantee that the service will be uninterrupted, timely, secure, or error-free.</p>
+        </div>
+
+        <div class="terms-section">
+            <h2>11. Limitation of Liability</h2>
+            <p>To the maximum extent permitted by law, we shall not be liable for any direct, indirect, incidental, special, consequential, or punitive damages.</p>
+        </div>
+
+        <div class="terms-section">
+            <h2>12. General Terms</h2>
+            <p>12.1 These terms constitute the entire agreement between you and us regarding the use of our services.</p>
+            <p>12.2 If any provision of these terms is found to be invalid or unenforceable, the remaining provisions will remain in effect.</p>
+            <p>12.3 Our failure to enforce any right or provision of these terms will not constitute a waiver of such right or provision.</p>
+        </div>
+    </div>
+
+    <div class="terms-footer">
+        <p>Last updated: {{ now.strftime('%Y-%m-%d') }}</p>
+        <p>If you have any questions, please contact us: <a href="mailto:legal@example.com">legal@example.com</a></p>
+    </div>
+</div>
+{% endblock %}
+
+{% block head %}
+<style>
+    /* Terms of Use page styles - 现在使用金色主题，与隐私政策页面匹配 */
+    .page-header {
+        margin: 50px 0 40px;
+        text-align: center;
+    }
+
+    .page-header h1 {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.5rem;
+        color: #DAA520;  /* 金色 */
+        text-shadow: 0 1px 4px rgba(218, 165, 32, 0.4);
+    }
+
+    .subtitle {
+        font-size: 1.1rem;
+        color: var(--gray-500);
+        margin-top: 10px;
+    }
+
+    .terms-container {
+        background-color: white;
+        border-radius: 12px;
+        padding: 40px;
+        box-shadow: 0 4px 12px var(--morandi-shadow);
+        margin-bottom: 50px;
+    }
+
+    .terms-section {
+        margin-bottom: 30px;
+    }
+
+    .terms-section h2 {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.5rem;
+        color: #DAA520;  /* 金色 */
+        margin: 30px 0 15px;
+        padding-bottom: 5px;
+        border-bottom: 1px solid var(--gray-200);
+    }
+
+    .terms-section p {
+        font-family: 'Lora', serif;
+        line-height: 1.7;
+        color: var(--morandi-text);
+        margin-bottom: 15px;
+    }
+
+    .terms-section ul {
+        margin-left: 20px;
+        margin-bottom: 15px;
+    }
+
+    .terms-section li {
+        font-family: 'Lora', serif;
+        line-height: 1.7;
+        color: var(--morandi-text);
+        margin-bottom: 8px;
+    }
+
+    .terms-footer {
+        text-align: center;
+        color: var(--gray-500);
+        font-size: 0.9rem;
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid var(--gray-200);
+    }
+
+    @media (max-width: 768px) {
+        .terms-container {
+            padding: 20px;
+        }
+
+        .terms-section h2 {
+            font-size: 1.2rem;
+        }
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <div class="section-header-elegant">
+            <div class="header-decoration left"></div>
+            <h1>About Campus Community</h1>
+            <div class="header-decoration right"></div>
+        </div>
+    </div>
+
+    <div class="content-section">
+        <div class="about-intro">
+            <p class="intro-text">Campus Community is a platform designed to connect students, foster academic discussions, and enhance campus life.</p>
+        </div>
+
+        <div class="about-cards">
+            <div class="about-card">
+                <div class="about-icon">
+                    <i class="fas fa-graduation-cap"></i>
+                </div>
+                <h3>Our Mission</h3>
+                <p>To create a vibrant online community where students can share knowledge, experiences, and build lasting connections.</p>
+            </div>
+
+            <div class="about-card">
+                <div class="about-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <h3>Our Community</h3>
+                <p>A diverse group of students, faculty, and staff committed to creating an inclusive and supportive academic environment.</p>
+            </div>
+
+            <div class="about-card">
+                <div class="about-icon">
+                    <i class="fas fa-lightbulb"></i>
+                </div>
+                <h3>Our Vision</h3>
+                <p>To transform how campus communities interact, making knowledge sharing and collaboration easier than ever before.</p>
+            </div>
+        </div>
+
+        <div class="about-story">
+            <h2>Our Story</h2>
+            <p>Campus Community was founded in 2025 with a simple idea: create a dedicated space where students can connect beyond the classroom. Whether you're looking for study partners, want to discuss academic topics, or simply want to stay informed about campus events, our platform provides the tools you need.</p>
+
+            <p>We believe that education extends beyond lectures and textbooks. The interactions between students, the exchange of ideas, and the shared experiences are equally important parts of the learning journey.</p>
+
+            <h2>Join Our Community</h2>
+            <p>We invite you to be part of this growing community. Share your knowledge, ask questions, participate in discussions, and help us build a vibrant campus ecosystem.</p>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Page design */
+    .page-header {
+        margin: 50px 0 40px;
+        text-align: center;
+    }
+
+    .page-header h1 {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.5rem;
+        color: #DAA520;  /* gold */
+        text-shadow: 0 1px 4px rgba(218, 165, 32, 0.4);
+    }
+
+    .content-section {
+        background-color: white;
+        border-radius: 12px;
+        padding: 40px;
+        box-shadow: 0 4px 12px var(--morandi-shadow);
+        margin-bottom: 50px;
+    }
+
+    .about-intro {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .intro-text {
+        font-family: 'Lora', serif;
+        font-size: 1.4rem;
+        font-style: italic;
+        color: #D4AF37;  /* gold colour */
+        max-width: 800px;
+        margin: 0 auto;
+        line-height: 1.6;
+    }
+
+    .about-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        grid-gap: 30px;
+        margin: 40px 0;
+    }
+
+    .about-card {
+        background-color: white;
+        border: 1px solid var(--morandi-light);
+        border-radius: 10px;
+        padding: 30px;
+        text-align: center;
+        box-shadow: 0 5px 15px var(--morandi-shadow);
+        transition: all 0.3s ease;
+    }
+
+    .about-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px var(--morandi-shadow);
+    }
+
+    .about-icon {
+        width: 80px;
+        height: 80px;
+        background-color: var(--morandi-light);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+    }
+
+    .about-icon i {
+        font-size: 2rem;
+        color: #DAA520;  /* gold colour */
+    }
+
+    .about-card h3 {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.5rem;
+        margin-bottom: 15px;
+        color: var(--morandi-dark);
+    }
+
+    .about-card p {
+        font-family: 'Lora', serif;
+        color: var(--morandi-text);
+        line-height: 1.6;
+    }
+
+    .about-story {
+        max-width: 800px;
+        margin: 50px auto 20px;
+    }
+
+    .about-story h2 {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.8rem;
+        color: #DAA520;  /* bright gold colour */
+        margin: 30px 0 20px;
+    }
+
+    .about-story p {
+        font-family: 'Lora', serif;
+        font-size: 1.1rem;
+        line-height: 1.8;
+        color: var(--morandi-text);
+        margin-bottom: 20px;
+    }
+</style>
+{% endblock %}

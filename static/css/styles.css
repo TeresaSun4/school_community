@@ -1,0 +1,19 @@
+/* 添加Read More按钮的样式 */
+.read-more-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: var(--primary);
+  font-size: 0.9rem;
+  transition: all var(--transition-normal);
+  text-decoration: none;
+}
+
+.read-more-btn:hover {
+  color: var(--primary-dark);
+  transform: translateX(3px);
+}
+
+.read-more-btn i {
+  font-size: 0.8rem;
+}
