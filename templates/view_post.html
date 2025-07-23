@@ -342,7 +342,7 @@
     color: var(--morandi-text);
   }
 
-  /* 删除按钮样式 - 增强版 */
+  /* Delete Button Styles - Enhanced Version with improved visual feedback */
   .delete-btn {
     background-color: #e74c3c;
     color: white;
@@ -375,7 +375,7 @@
     font-size: 1rem;
   }
 
-  /* 添加删除成功动画 */
+  /* Add Success Animation for Post Deletion - Visual confirmation for users */
   .delete-success {
     position: fixed;
     top: 0;
@@ -443,7 +443,7 @@
     }
   }
 
-  /* 确认对话框样式 - 增强版 */
+  /* Enhanced Confirmation Dialog Styles - Improved visual feedback for user actions */
   .modal-overlay {
     position: fixed;
     top: 0;
@@ -717,14 +717,14 @@
   });
 </script>
 
-<!-- 图片查看模态框 -->
+<!-- Image Viewing Modal Dialog - Allows users to view images in larger format -->
 <div id="image-modal" class="image-modal">
   <span class="close-modal">&times;</span>
   <img class="modal-content" id="modal-image">
 </div>
 
 <style>
-/* 图片显示相关样式 */
+/* Image Display Related Styles - For image preview modal */
 .post-images {
   margin: 20px 0;
 }
@@ -756,7 +756,7 @@
   transform: scale(1.05);
 }
 
-/* 图片模态框样式 */
+/* photo style */
 .image-modal {
   display: none;
   position: fixed;
@@ -811,24 +811,24 @@
 </style>
 
 <script>
-// 图片查看模态框功能
+// Image Modal Functionality - Handle viewing images in full screen modal
 function openImageModal(imageSrc) {
   const modal = document.getElementById('image-modal');
   const modalImg = document.getElementById('modal-image');
   modal.style.display = "block";
   modalImg.src = imageSrc;
 
-  // 禁止页面滚动
+  // Prevent page scrolling when modal is open
   document.body.style.overflow = 'hidden';
 }
 
-// 关闭图片模态框
+// Close the image modal when X button is clicked
 document.querySelector('.close-modal').addEventListener('click', function() {
   document.getElementById('image-modal').style.display = "none";
   document.body.style.overflow = 'auto';
 });
 
-// 点击模态框背景也可以关闭
+// Also allow closing the modal by clicking on the background overlay
 document.getElementById('image-modal').addEventListener('click', function(e) {
   if (e.target === this) {
     this.style.display = "none";

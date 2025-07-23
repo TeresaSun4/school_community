@@ -226,10 +226,10 @@
     {% block head %}{% endblock %}
 </head>
 <body>
-    <!-- 通知系统 -->
+    <!-- notification system -->
     <div id="notification-container"></div>
 
-    <!-- Flash消息处理 -->
+    <!-- Flash message -->
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
             <script>
@@ -237,7 +237,7 @@
                     {% for category, message in messages %}
                         setTimeout(function() {
                             showNotification('{{ message }}', '{{ category }}', 5000);
-                        }, {{ loop.index0 * 300 }}); // 每条消息延迟300ms显示，避免重叠
+                        }, {{ loop.index0 * 300 }}); // Each message is delayed by 300ms to prevent overlap
                     {% endfor %}
                 });
             </script>

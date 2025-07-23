@@ -1,4 +1,4 @@
-/* 精致现代页脚样式 - 与登录/注册页面风格一致 */
+/* Modern Footer Style - Consistent with Login/Registration Page Style */
 .site-footer {
   position: relative;
   background: linear-gradient(135deg, var(--primary-dark), var(--primary));
@@ -8,7 +8,7 @@
   overflow: hidden;
 }
 
-/* 左侧装饰圆形 */
+/* Left Decorative Circle */
 .site-footer::before {
   content: '';
   position: absolute;
@@ -22,7 +22,7 @@
   z-index: 0;
 }
 
-/* 右侧装饰圆形 */
+/* Right Decorative Circle */
 .site-footer::after {
   content: '';
   position: absolute;
@@ -36,7 +36,7 @@
   z-index: 0;
 }
 
-/* 背景装饰图案 */
+/* Background Decorative Pattern */
 .footer-pattern {
   position: absolute;
   top: 0;
@@ -47,7 +47,7 @@
   z-index: 0;
 }
 
-/* 主内容区容器 */
+/* Main Content Container */
 .footer-container {
   position: relative;
   z-index: 1;
@@ -56,7 +56,7 @@
   padding: 4rem 0 0;
 }
 
-/* 内容卡片 */
+/* Content Card */
 .footer-content-card {
   background: var(--white);
   border-radius: var(--radius-lg);
@@ -74,7 +74,7 @@
   gap: 2rem;
 }
 
-/* 品牌区域 */
+/* Brand Area */
 .footer-brand {
   flex: 1;
   min-width: 280px;
@@ -112,7 +112,7 @@
   line-height: 1.6;
 }
 
-/* 导航部分 */
+/* Navigation Section */
 .footer-nav {
   display: flex;
   gap: 3rem;
@@ -171,7 +171,7 @@
   opacity: 0.7;
 }
 
-/* 社交媒体 */
+/* Social Media */
 .footer-social {
   display: flex;
   gap: 1rem;
@@ -197,7 +197,7 @@
   box-shadow: var(--shadow-md);
 }
 
-/* 版权区域 */
+/* Copyright Area */
 .footer-bottom {
   background: rgba(0, 0, 0, 0.1);
   padding: 1.5rem 0;
@@ -212,7 +212,7 @@
   font-size: 0.9rem;
 }
 
-/* 响应式调整 */
+/* Responsive Adjustments */
 @media (max-width: 768px) {
   .footer-content-card {
     flex-direction: column;

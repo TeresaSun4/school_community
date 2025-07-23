@@ -534,7 +534,7 @@
         transition: transform var(--transition-normal);
     }
 
-    /* Pagination - 与个人资料页分页一致 */
+    /* Pagination - Consistent styling with profile page pagination for UI coherence */
     .pagination {
         display: flex;
         justify-content: center;
@@ -653,7 +653,7 @@
     }
 
 
-    /* 点赞按钮样式 */
+    /* Like Button Styles - Visual feedback for engagement actions */
     .post-actions {
         display: flex;
         align-items: center;
@@ -703,7 +703,7 @@
         transform: scale(0.9);
     }
 
-    /* 强化点赞按钮样式 */
+    /* Enhanced Like Button Styles - Animated effects for better user feedback */
     .like-btn-small {
         cursor: pointer;
         outline: none;
@@ -740,18 +740,18 @@
 </style>
 
 <script>
-// 点赞功能 JavaScript
+// Like Functionality JavaScript - Handles user interactions with post likes
 document.addEventListener('DOMContentLoaded', function() {
-    // 为所有点赞按钮添加点击事件
+    // Add click event handlers to all like buttons
     const likeButtons = document.querySelectorAll('.like-btn-small');
 
-    // 初始化点赞状态
+    // Initialize like status based on server data
     likeButtons.forEach(button => {
-        // 获取初始点赞状态
+        // Get initial like status from button attributes
         const isLiked = button.dataset.liked === 'true';
         const likeIcon = button.querySelector('i');
 
-        // 确保正确的样式
+        // Ensure correct styling based on like status
         if (isLiked) {
             button.classList.add('liked');
             likeIcon.className = 'fas fa-heart';
@@ -760,21 +760,21 @@ document.addEventListener('DOMContentLoaded', function() {
             likeIcon.className = 'far fa-heart';
         }
 
-        // 仅为已登录用户添加点赞事件（没有onclick属性的按钮）
+        // Add like events only for logged-in users (buttons without onclick attribute)
         if (!button.hasAttribute('onclick')) {
             button.addEventListener('click', function(e) {
                 e.preventDefault();
-                console.log('点赞按钮被点击');
+                console.log('Like button clicked');
 
                 const likeContainer = this.closest('.like-container');
                 const postId = likeContainer.dataset.postId;
                 const likesCountElement = likeContainer.querySelector('.likes-count-small');
 
-                // 检查当前点赞状态
+                // Check current like status to determine action
                 const isLiked = this.classList.contains('liked');
-                console.log('当前点赞状态:', isLiked);
+                console.log('Current like status:', isLiked);
 
-                // 切换点赞状态
+                // Toggle like status in the UI
                 if (isLiked) {
                     this.classList.remove('liked');
                     likeIcon.className = 'far fa-heart';
@@ -785,7 +785,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     this.dataset.liked = 'true';
                 }
 
-                // 发送请求到服务器
+                // Send request to server to update like status
                 fetch('/api/like/' + postId, {
                     method: 'POST',
                     headers: {
@@ -797,14 +797,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 })
                 .then(response => response.json())
                 .then(data => {
-                    console.log('服务器响应:', data);
+                    console.log('Server response:', data);
                     if (data.success) {
-                        // 更新点赞数
+                        // Update like count displayed to user
                         if (likesCountElement) {
                             likesCountElement.textContent = data.likes_count;
                         }
 
-                        // 确保UI与服务器状态一致
+                        // Ensure UI reflects correct server state
                         if (data.action === 'liked') {
                             this.classList.add('liked');
                             likeIcon.className = 'fas fa-heart';
@@ -819,7 +819,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 })
                 .catch(error => {
-                    console.error('点赞请求出错:', error);
+                    console.error('Like request error:', error);
                 });
             });
         }

@@ -1,6 +1,6 @@
-/* ========== 基础重置 & 现代配色系统 ========== */
+/* ========== Basic Reset & Modern Color System ========== */
 :root {
-    /* 现代莫兰迪色系 - 更和谐的色彩组合 */
+    /* Modern Muted Color Scheme - More Harmonious Color Combinations */
     --primary: #7D9D9C;
     --primary-dark: #576F72;
     --primary-light: rgba(125, 157, 156, 0.15);
@@ -14,12 +14,12 @@
     --gray: #D8D8D8;
     --dark-gray: #6E7F80;
 
-    /* 状态色 */
+    /* Status Colors */
     --success: #7FB77E;
     --error: #DD5353;
     --warning: #F7C04A;
 
-    /* 间距 - 更精细的比例 */
+    /* Spacing - More Refined Proportions */
     --space-xxs: 0.125rem;
     --space-xs: 0.25rem;
     --space-sm: 0.5rem;
@@ -28,23 +28,23 @@
     --space-xl: 2rem;
     --space-xxl: 3rem;
 
-    /* 阴影系统 - 更微妙的层次 */
+    /* Shadow System - More Subtle Layers */
     --shadow-sm: 0 2px 8px rgba(0,0,0,0.03), 0 1px 2px rgba(0,0,0,0.04);
     --shadow-md: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.05);
     --shadow-lg: 0 10px 25px rgba(0,0,0,0.12), 0 4px 10px rgba(0,0,0,0.08);
     --shadow-focus: 0 0 0 3px rgba(125, 157, 156, 0.25);
 
-    /* 圆角系统 */
+    /* Border Radius System */
     --radius-sm: 4px;
     --radius-md: 8px;
     --radius-lg: 12px;
     --radius-xl: 16px;
     --radius-full: 50px;
 
-    /* 字体系统 */
+    /* Font System */
     --font-primary: 'Poppins', 'Microsoft YaHei', sans-serif;
 
-    /* 过渡 */
+    /* Transitions */
     --transition-fast: 0.15s ease;
     --transition-normal: 0.25s ease;
     --transition-slow: 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
@@ -90,7 +90,7 @@ a:hover {
     color: var(--primary-dark);
 }
 
-/* ========== 现代布局系统 ========== */
+/* ========== Modern Layout System ========== */
 .container {
     width: 100%;
     max-width: 1200px;
@@ -123,7 +123,7 @@ a:hover {
     border-radius: var(--radius-full);
 }
 
-/* ========== 现代导航栏 ========== */
+/* ========== Modern Navigation Bar ========== */
 .navbar {
     background: var(--white-transparent);
     backdrop-filter: blur(15px);
@@ -310,7 +310,7 @@ a:hover {
     cursor: pointer;
 }
 
-/* ========== 现代卡片布局 ========== */
+/* ========== Modern Card Layout ========== */
 .posts-container {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -382,16 +382,16 @@ a:hover {
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background: var(--primary-dark); /* 更深的背景色，增加对比度 */
-    color: #FFFFFF; /* 纯白色，最明亮 */
+    background: var(--primary-dark); /* Deeper background color, increased contrast */
+    color: #FFFFFF; /* Pure white, brightest */
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: 700; /* 增加字重 */
-    font-size: 1.3rem; /* 增大字体 */
-    box-shadow: var(--shadow-md); /* 增强阴影 */
-    text-shadow: 0 1px 2px rgba(0,0,0,0.2); /* 添加文本阴影增加可读性 */
-    letter-spacing: 0.5px; /* 增加字符间距 */
+    font-weight: 700; /* Increased font weight */
+    font-size: 1.3rem; /* Enlarged font size */
+    box-shadow: var(--shadow-md); /* Enhanced shadow */
+    text-shadow: 0 1px 2px rgba(0,0,0,0.2); /* Add text shadow to improve readability */
+    letter-spacing: 0.5px; /* Increased letter spacing */
 }
 
 .author-info {
@@ -504,7 +504,7 @@ a:hover {
     transform: translateX(3px);
 }
 
-/* ========== 分页 ========== */
+/* ========== Pagination ========== */
 .pagination {
     display: flex;
     justify-content: center;
@@ -513,7 +513,7 @@ a:hover {
     flex-wrap: wrap;
 }
 
-/* ========== 现代动画 ========== */
+/* ========== Modern Animations ========== */
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
@@ -530,7 +530,7 @@ a:hover {
     }
 }
 
-/* ========== 响应式设计 ========== */
+/* ========== Responsive Design ========== */
 @media (max-width: 992px) {
     .posts-container {
         grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -808,3 +808,27 @@ a:hover {
 .mt-md { margin-top: var(--space-md); }
 .mt-lg { margin-top: var(--space-lg); }
 .mt-xl { margin-top: var(--space-xl); }
+
+
+
+
+/* Grid layout example  */
+.post-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px; /* Complete replacement for float/table */
+  }
+  
+  /* Flexbox navigation */
+  .navbar {
+    display: flex;
+    justify-content: space-between; /* Modern nav standard */
+    align-items: center; /* Vertical centering */
+  }
+  
+  /* Mobile-first responsive grid */
+  @media (max-width: 768px) {
+    .post-container {
+      grid-template-columns: 1fr; /* Single column on mobile */
+    }
+  }

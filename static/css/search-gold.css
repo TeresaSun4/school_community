@@ -1,4 +1,4 @@
-/* 搜索页面金色标题样式 */
+/* Search Page Gold Title Style */
 .search-hero h1 {
   font-size: 2.8rem;
   font-weight: 700;
@@ -7,30 +7,30 @@
   display: inline-block;
   letter-spacing: -0.01em;
 
-  /* 金色渐变效果 */
+  /* Gold Gradient Effect */
   background: linear-gradient(135deg, #FFD700, #DAA520, #F5D78E, #D4AF37);
   background-size: 300% 300%;
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
 
-  /* 光泽效果 */
+  /* Gloss Effect */
   text-shadow: 
     0px 2px 10px rgba(218, 165, 32, 0.4),
     0px 4px 20px rgba(255, 215, 0, 0.2);
 
-  /* 动画效果 */
+  /* Animation Effect */
   animation: searchGoldShimmer 8s infinite;
 }
 
-/* 金色动画效果 */
+/* Gold Animation Effect */
 @keyframes searchGoldShimmer {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
 }
 
-/* 美化搜索表单 */
+/* Beautified Search Form */
 .search-form {
   max-width: 700px;
   margin: 0 auto 2rem;

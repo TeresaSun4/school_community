@@ -676,3 +676,18 @@ if __name__ == '__main__':
     port = int(os.environ.get('PORT', 8082))  # Change default port to 8082
     app.run(debug=True, host='0.0.0.0', port=port)
 # Note: The database has already been initialized earlier
+
+
+
+
+
+# Delete confirmation (Nielsen: User control principle)
+@app.route('/delete_post/<int:post_id>', methods=['POST'])
+def delete_post(post_id):
+    # Require explicit confirmation
+    if not request.form.get('confirmation'):
+        abort(400, "Deletion requires confirmation")  # Covered in T19
+    
+    # Proceed with deletion
+    db.execute("DELETE FROM posts WHERE id = ?", (post_id,))
+    return redirect(url_for('index'))

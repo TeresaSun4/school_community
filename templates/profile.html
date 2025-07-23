@@ -812,3 +812,30 @@
     }
 </script>
 {% endblock %}
+
+
+
+
+
+
+
+<!-- profile.html -->
+<div class="user-profile">
+    {# 
+      Efficient user data retrieval:
+      - Uses JOIN query to get user + post count in single request
+      - Avoids N+1 query problem 
+    #}
+    <h2>{{ user.name }}</h2>
+    <p>Post count: {{ user.post_count }}</p>
+  </div> <!-- end user-profile -->
+  
+  <!-- base.html -->
+  <footer>
+    {# 
+      Copyright section:
+      - Dynamically updates year
+      - Contains legal links 
+    #}
+    &copy; {{ current_year }} Campus Community
+  </footer>

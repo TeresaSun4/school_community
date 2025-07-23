@@ -440,7 +440,7 @@ textarea.form-control {
 
   // Image upload preview
   document.getElementById('images').addEventListener('change', function(e) {
-    const file = e.target.files[0]; // 只获取第一张图片
+    const file = e.target.files[0]; // Only get the first selected image
     const previewContainer = document.getElementById('image-preview');
 
     // Clear preview if already exists
@@ -472,7 +472,7 @@ textarea.form-control {
       // Add remove functionality
       preview.querySelector('.remove-btn').addEventListener('click', function() {
         preview.remove();
-        e.target.value = ''; // 清除文件输入
+        e.target.value = ''; // Clear file input to allow selecting the same file again
       });
 
       previewContainer.appendChild(preview);

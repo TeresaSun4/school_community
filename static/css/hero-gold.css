@@ -1,4 +1,4 @@
-/* 首页金色主标题样式 */
+/* Homepage Gold Main Title Style */
 .hero {
   position: relative;
   padding: 6rem 0;
@@ -27,7 +27,7 @@
   padding: 0 1.5rem;
 }
 
-/* 金色主标题样式 */
+/* Gold Main Title Style */
 .main-title {
   font-size: 3.5rem;
   font-weight: 800;
@@ -37,30 +37,30 @@
   text-transform: uppercase;
   letter-spacing: -0.02em;
 
-  /* 金色渐变效果 */
+  /* Gold Gradient Effect */
   background: linear-gradient(135deg, #FFD700, #DAA520, #F5D78E, #D4AF37);
   background-size: 300% 300%;
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
 
-  /* 光泽效果 */
+  /* Gloss Effect */
   text-shadow: 
     0px 2px 10px rgba(218, 165, 32, 0.4),
     0px 4px 20px rgba(255, 215, 0, 0.2);
 
-  /* 动画效果 */
+  /* Animation Effect */
   animation: goldShimmer 8s infinite;
 }
 
-/* 金色动画效果 */
+/* Gold Animation Effect */
 @keyframes goldShimmer {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
 }
 
-/* 副标题 */
+/* Subtitle */
 .subtitle {
   font-size: 1.25rem;
   font-weight: 400;
@@ -71,14 +71,14 @@
   margin-right: auto;
 }
 
-/* 动作按钮 */
+/* Action Buttons */
 .action-buttons {
   display: flex;
   justify-content: center;
   gap: 1rem;
 }
 
-/* 响应式调整 */
+/* Responsive Adjustments */
 @media (max-width: 768px) {
   .hero {
     padding: 4rem 0;

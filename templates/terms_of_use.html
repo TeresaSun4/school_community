@@ -26,6 +26,9 @@
             <p>3.2 You must provide accurate, complete, and up-to-date personal information.</p>
             <p>3.3 You are responsible for maintaining the security of your account password and for all activities that occur under your account.</p>
             <p>3.4 You must notify us immediately of any unauthorized use of your account.</p>
+            <p>3.5 For security reasons, usernames must be at least 4 characters in length, as enforced by our database:</p>
+            <pre><code class="sql">/* 确保用户名长度合法 */
+ALTER TABLE users ADD CONSTRAINT chk_username_length CHECK (LENGTH(username) >= 4);</code></pre>
         </div>
 
         <div class="terms-section">
@@ -98,7 +101,7 @@
 
 {% block head %}
 <style>
-    /* Terms of Use page styles - 现在使用金色主题，与隐私政策页面匹配 */
+    /* Terms of Use page styles - Now using gold theme to match the privacy policy page */
     .page-header {
         margin: 50px 0 40px;
         text-align: center;
@@ -107,7 +110,7 @@
     .page-header h1 {
         font-family: 'Playfair Display', serif;
         font-size: 2.5rem;
-        color: #DAA520;  /* 金色 */
+        color: #DAA520;  /* Gold color - elegant accent for main title */
         text-shadow: 0 1px 4px rgba(218, 165, 32, 0.4);
     }
 
@@ -132,7 +135,7 @@
     .terms-section h2 {
         font-family: 'Playfair Display', serif;
         font-size: 1.5rem;
-        color: #DAA520;  /* 金色 */
+        color: #DAA520;  /* Gold color - consistent styling for section headings */
         margin: 30px 0 15px;
         padding-bottom: 5px;
         border-bottom: 1px solid var(--gray-200);

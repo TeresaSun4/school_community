@@ -1,6 +1,6 @@
-/* ========== 高级现代设计系统 ========== */
+/* ========== Modern deisgn ========== */
 :root {
-  /* 高级渐变配色系统 */
+  /* modern colour change */
   --primary: #4F709C;
   --primary-dark: #213555;
   --primary-light: #E5D283;
@@ -9,7 +9,7 @@
   --accent-light: rgba(245, 238, 200, 0.25);
   --accent-gradient: linear-gradient(135deg, #F5EEC8, #E5D283);
 
-  /* 中性色调 */
+  /* middle colour */
   --text: #2C3333;
   --text-light: rgba(44, 51, 51, 0.7);
   --white: #FFFFFF;
@@ -20,7 +20,7 @@
   --gray-300: #D1D5DB;
   --gray-400: #9CA3AF;
 
-  /* 状态色彩 */
+  /* status colour */
   --success: #10B981;
   --success-light: rgba(16, 185, 129, 0.1);
   --error: #EF4444;
@@ -30,35 +30,35 @@
   --info: #3B82F6;
   --info-light: rgba(59, 130, 246, 0.1);
 
-  /* 阴影系统 - 更精致的阴影效果 */
+  /* shading */
   --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.03), 0 1px 2px rgba(0, 0, 0, 0.06);
   --shadow: 0 4px 6px rgba(0, 0, 0, 0.04), 0 2px 4px rgba(0, 0, 0, 0.06);
   --shadow-md: 0 10px 15px rgba(0, 0, 0, 0.05), 0 4px 6px rgba(0, 0, 0, 0.05);
   --shadow-lg: 0 20px 25px rgba(0, 0, 0, 0.06), 0 10px 10px rgba(0, 0, 0, 0.04);
   --shadow-focus: 0 0 0 3px rgba(79, 112, 156, 0.3);
 
-  /* 玻璃态效果 */
+  /* makes it look more clean */
   --glass-bg: rgba(255, 255, 255, 0.8);
   --glass-border: rgba(255, 255, 255, 0.18);
   --glass-blur: blur(10px);
 
-  /* 字体系统 */
+  /* font */
   --font-primary: 'Poppins', 'Microsoft YaHei', sans-serif;
 
-  /* 动画效果 */
+  /* effect */
   --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* 全局基础样式增强 */
+/* base style improvment */
 body {
   font-family: var(--font-primary);
   background-color: var(--gray-50);
   color: var(--text);
 }
 
-/* 按钮增强 - 添加精美过渡效果 */
+/* button design */
 .nav-button, .cta-button {
   border-radius: 12px;
   padding: 0.75rem 1.5rem;
@@ -108,7 +108,7 @@ body {
   color: var(--primary-dark);
 }
 
-/* 玻璃态导航栏 */
+
 .navbar {
   background: var(--glass-bg);
   backdrop-filter: var(--glass-blur);
@@ -136,7 +136,7 @@ body {
   transform: scale(1.05);
 }
 
-/* 搜索框增强 */
+/* search */
 .search-box {
   border-radius: 12px;
   transition: all var(--transition-normal);
@@ -150,7 +150,7 @@ body {
   box-shadow: var(--shadow-focus);
 }
 
-/* 卡片样式增强 */
+/* card style improvement */
 .post-card {
   border-radius: 16px;
   background: var(--white);
@@ -177,7 +177,7 @@ body {
   box-shadow: var(--shadow-lg);
 }
 
-/* 分类标签增强 */
+/* catergory */
 .category-tag {
   background-image: var(--accent-gradient);
   color: var(--primary-dark);
@@ -196,7 +196,7 @@ body {
   opacity: 0.7;
 }
 
-/* 欢迎横幅增强 */
+/* welcome */
 .welcome-banner {
   background: var(--primary-gradient);
   border-radius: 24px;
@@ -262,7 +262,7 @@ body {
   height: 100%;
 }
 
-/* 浮动卡片动画 */
+/* floating card animation */
 .floating-card {
   background: var(--white);
   border-radius: 16px;
@@ -315,7 +315,7 @@ body {
   }
 }
 
-/* 功能特性卡片 */
+/* feature design */
 .features-section {
   margin-top: 4rem;
   padding: 3rem 0;
@@ -411,7 +411,7 @@ body {
   line-height: 1.6;
 }
 
-/* 分页样式增强 */
+/* page section */
 .pagination {
   display: flex;
   align-items: center;
@@ -451,7 +451,7 @@ body {
   padding: 0 8px;
 }
 
-/* 帖子内容增强 */
+/* post improvement */
 .post-title a {
   display: block;
   color: var(--text);
@@ -532,7 +532,7 @@ body {
   transform: translateX(4px);
 }
 
-/* 媒体查询 - 响应式设计 */
+/* media queries */
 @media (max-width: 992px) {
   .welcome-banner {
     flex-direction: column;
@@ -591,7 +591,7 @@ body {
   }
 }
 
-/* 自定义动画 */
+/* self designed animation */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -615,7 +615,7 @@ body {
   }
 }
 
-/* 状态提示样式增强 */
+/* status message */
 .flash-container {
   position: fixed;
   top: 80px;
@@ -747,7 +747,7 @@ body {
   }
 }
 
-/* 页面底部增强 */
+/* improve for the buttom page */
 .footer {
   background: var(--primary-dark);
   color: var(--white);
@@ -839,7 +839,7 @@ body {
   font-size: 0.9rem;
 }
 
-/* 表单控件美化 */
+/* making the table more pretty */
 .form-control {
   margin-bottom: 1.5rem;
 }
@@ -877,7 +877,7 @@ textarea.form-input {
   resize: vertical;
 }
 
-/* 创建自定义UI组件 - 切换视图按钮组 */
+/* create UI Component */
 .view-toggle {
   display: flex;
   border-radius: 10px;
@@ -903,7 +903,7 @@ textarea.form-input {
   background: var(--gray-100);
 }
 
-/* 排序下拉框美化 */
+/* sort */
 .sort-options select {
   appearance: none;
   background: var(--white) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%234F709C' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") no-repeat;
@@ -925,7 +925,7 @@ textarea.form-input {
   outline: none;
 }
 
-/* 标题头部布局 */
+/* heading */
 .section-header {
   display: flex;
   justify-content: space-between;
@@ -946,7 +946,7 @@ textarea.form-input {
   gap: 1rem;
 }
 
-/* 列表视图样式 */
+/* post view style */
 .posts-container.list-view {
   display: flex;
   flex-direction: column;
