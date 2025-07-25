@@ -451,7 +451,7 @@ def like_post(post_id):
     # Use a generic processing function to handle like/unlike actions
     success, action, likes_count = process_post_like(post_id)
 
-    # 获取原始post对象用于重定向
+# Get the original post object for redirection
     post = Post.query.get_or_404(post_id)
 
     # Check if this is an AJAX request
@@ -515,7 +515,7 @@ def upload_avatar():
         flash('No file selected', 'error')
         return redirect(url_for('profile', username=current_user.username))
 
-    # 使用封装的函数处理文件上传
+   #To handle file uploads
     filename = save_uploaded_file(file, "user", current_user.id)
     if filename:
         current_user.avatar = filename
@@ -650,7 +650,7 @@ def delete_post(post_id):
     # Delete all images associated with the post
     post_images = PostImage.query.filter_by(post_id=post_id).all()
     for image in post_images:
-        # 删除实际的图片文件
+        # Delte actual photo
         image_path = os.path.join(app.config['UPLOAD_FOLDER'], image.filename)
         try:
             if os.path.exists(image_path):

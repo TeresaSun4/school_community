@@ -65,7 +65,18 @@
   font-size: 1.25rem;
   font-weight: 400;
   color: rgba(255, 255, 255, 0.9);
-  margin-bottom: 2.5rem;
+  margin-bottom: 2rem;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Subtitl2 */
+.subtitle2 {
+  font-size: 2rem;
+  font-weight: 400;
+  color: rgba(238, 207, 29, 0.9);
+  margin-bottom: 2rem;
   max-width: 600px;
   margin-left: auto;
   margin-right: auto;
