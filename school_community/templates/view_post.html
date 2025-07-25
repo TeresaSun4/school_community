@@ -1,0 +1,839 @@
+{% extends "base.html" %}
+
+{# Jinja comment: This template displays the details of a single post, including comments and like functionality #}
+{% block content %}
+<div class="container">
+  <!-- Post detail card -->
+  <div class="post-detail card">
+    <!-- Post title and metadata section -->
+    <div class="post-header">
+      <span class="category-badge">{{ post.category|default('general') }}</span>
+      <h1>{{ post.title }}</h1>
+      <div class="post-meta">
+        <a href="{{ url_for('profile', username=post.author.username) }}" class="author">
+          {% if post.author.avatar %}
+            <img src="{{ url_for('static', filename='uploads/' + post.author.avatar) }}" class="avatar-small">
+          {% else %}
+            <i class="fas fa-user-circle"></i>
+          {% endif %}
+          {{ post.author.username }}
+        </a>
+        <span class="date">{{ post.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
+
+        <!-- Add delete button, only visible to post author -->
+        {% if current_user.is_authenticated and current_user.id == post.user_id %}
+          <button id="delete-post-btn" class="delete-btn" title="Delete Post">
+            <i class="fas fa-trash-alt"></i> Delete Post
+          </button>
+        {% endif %}
+      </div> <!-- /.post-meta -->
+    </div> <!-- /.post-header -->
+
+    <!-- Post content section -->
+    <div class="post-content">
+      <div class="content-preview" id="content-preview">
+        {{ post.content[:300] }}
+        {% if post.content|length > 300 %}
+          <span class="fade-effect"></span>
+        {% endif %}
+      </div>
+
+      {% if post.content|length > 300 %}
+        <div class="content-full" id="content-full" style="display:none;">
+          {{ post.content }}
+        </div>
+        <button class="read-more-btn" id="read-more-btn" onclick="toggleContent()">Read More</button>
+        <button class="read-less-btn" id="read-less-btn" style="display:none;" onclick="toggleContent()">Read Less</button>
+      {% endif %}
+
+      <!-- Post image display area -->
+      {% if post.images %}
+      <div class="post-images">
+        <div class="image-gallery">
+          {% for image in post.images %}
+            <div class="gallery-item">
+              <img src="{{ url_for('static', filename='uploads/' + image.filename) }}" alt="Post image" class="post-image" onclick="openImageModal('{{ url_for('static', filename='uploads/' + image.filename) }}')">
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+    </div> <!-- /.post-content -->
+
+    <!-- Post footer operation bar - like and view count -->
+    <div class="post-footer">
+      <!-- Like button -->
+      {% if current_user.is_authenticated %}
+        <form method="POST" action="{{ url_for('like_post', post_id=post.id) }}" class="like-form">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+          <button type="submit" class="like-btn {% if current_user.has_liked_post(post) %}liked{% endif %}">
+            <i class="{% if current_user.has_liked_post(post) %}fas{% else %}far{% endif %} fa-heart"></i>
+            <span>{% if current_user.has_liked_post(post) %}Unlike{% else %}Like{% endif %}</span>
+          </button>
+        </form>
+      {% else %}
+        <a href="{{ url_for('login') }}" class="like-btn-disabled">
+          <i class="far fa-heart"></i> <span>Like</span>
+        </a>
+      {% endif %}
+
+      <span class="likes-count"><i class="fas fa-heart"></i> {{ post.likes.count() }} Likes</span>
+      <script>
+        // When supported by the database, actual like count will be used here
+      </script>
+    </div> <!-- /.post-footer -->
+
+    <!-- Comments section -->
+    <div class="comments-section">
+      <h3><i class="fas fa-comments"></i> Comments</h3>
+
+      <!-- Comment form - visible only to logged-in users -->
+      {% if current_user.is_authenticated %}
+        <form method="POST" action="{{ url_for('add_comment', post_id=post.id) }}" class="comment-form">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+          <div class="form-group">
+            <textarea name="content" placeholder="Write your comment..." minlength="3" required></textarea>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="submit-btn">Submit Comment</button>
+          </div>
+        </form>
+      {% else %}
+        <!-- Prompt for users not logged in -->
+        <div class="login-prompt">
+          Please <a href="{{ url_for('login') }}">login</a> to comment
+        </div>
+      {% endif %}
+
+      <!-- Comment list -->
+      <div class="comments-list">
+        {% for comment in post.comments %}
+          <div class="comment">
+            <div class="comment-header">
+              <a href="{{ url_for('profile', username=comment.author.username) }}" class="comment-author">
+                {{ comment.author.username }}
+              </a>
+              <span class="comment-date">{{ comment.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
+            </div> <!-- /.comment-header -->
+            <div class="comment-content">
+              {{ comment.content }}
+            </div> <!-- /.comment-content -->
+          </div> <!-- /.comment -->
+        {% endfor %}
+      </div> <!-- /.comments-list -->
+    </div> <!-- /.comments-section -->
+  </div> <!-- /.post-detail -->
+</div> <!-- /.container -->
+{% endblock %}
+
+{% block scripts %}
+<style>
+  /* Morandi color palette */
+  :root {
+    --morandi-primary: #A8B2B9;    /* Primary tone - light gray-blue */
+    --morandi-secondary: #D1C8BF;  /* Secondary tone - pink brown */
+    --morandi-accent: #B6A997;     /* Accent color - warm brown */
+    --morandi-light: #E6DFD9;      /* Light color - off-white */
+    --morandi-dark: #697268;       /* Dark color - olive gray */
+    --morandi-red: #C4A29E;        /* Morandi red */
+    --morandi-green: #A7AFA2;      /* Morandi green */
+    --morandi-blue: #96A7B6;       /* Morandi blue */
+    --morandi-bg: #F5F2F0;         /* Background color */
+    --morandi-text: #5D5D5D;       /* Text color */
+  }
+
+  /* Styles related to the Read More feature */
+  .fade-effect {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 50px;
+    background-image: linear-gradient(to bottom, transparent, var(--morandi-bg));
+  }
+
+  .content-preview {
+    position: relative;
+    overflow: hidden;
+    padding-bottom: 10px;
+  }
+
+  .read-more-btn, .read-less-btn {
+    background-color: var(--morandi-blue);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    margin-top: 10px;
+    transition: background-color 0.3s;
+  }
+
+  .read-more-btn:hover, .read-less-btn:hover {
+    background-color: var(--morandi-dark);
+  }
+
+  /* Styles related to like and comment functionality */
+  .post-footer {
+    display: flex;
+    align-items: center;
+    margin-top: 20px;
+    padding: 15px 0;
+    border-top: 1px solid var(--morandi-light);
+  }
+
+  .like-form {
+    display: inline-block;
+    margin-right: 15px;
+  }
+
+  .like-btn, .like-btn-disabled {
+    background: var(--morandi-light);
+    border: 1px solid var(--morandi-secondary);
+    border-radius: 20px;
+    padding: 6px 15px;
+    font-size: 14px;
+    color: var(--morandi-dark);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+  }
+
+  .like-btn:hover {
+    background-color: var(--morandi-secondary);
+    color: var(--morandi-red);
+  }
+
+  .like-btn i, .like-btn-disabled i {
+    margin-right: 5px;
+    font-size: 16px;
+  }
+
+  .liked {
+    background-color: var(--morandi-red);
+    color: white;
+    border-color: var(--morandi-red);
+  }
+
+  .liked i {
+    color: white;
+  }
+
+  .likes-count {
+    margin-right: 15px;
+    color: var(--morandi-text);
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+  }
+
+  .likes-count i {
+    margin-right: 5px;
+    color: var(--morandi-red);
+  }
+
+  /* Enhanced comment section styles */
+  .comments-section {
+    margin-top: 30px;
+    border-top: 1px solid var(--morandi-light);
+    padding-top: 20px;
+  }
+
+  .comments-section h3 {
+    font-size: 18px;
+    margin-bottom: 20px;
+    color: var(--morandi-dark);
+    display: flex;
+    align-items: center;
+  }
+
+  .comments-section h3 i {
+    margin-right: 8px;
+    color: var(--morandi-blue);
+  }
+
+  .comment-form {
+    background-color: var(--morandi-bg);
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+  }
+
+  .comment-form textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--morandi-secondary);
+    border-radius: 4px;
+    resize: vertical;
+    min-height: 80px;
+    margin-bottom: 10px;
+    background-color: white;
+    color: var(--morandi-text);
+  }
+
+  .comment-form .submit-btn {
+    background-color: var(--morandi-blue);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.3s;
+  }
+
+  .comment-form .submit-btn:hover {
+    background-color: var(--morandi-dark);
+  }
+
+  .comment {
+    background-color: white;
+    border: 1px solid var(--morandi-light);
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+
+  .comment-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+
+  .comment-author {
+    font-weight: 600;
+    color: var(--morandi-blue);
+  }
+
+  .comment-date {
+    color: var(--morandi-secondary);
+    font-size: 12px;
+  }
+
+  .comment-content {
+    color: var(--morandi-text);
+    line-height: 1.5;
+  }
+
+  /* Add some overall styles to use Morandi color palette as page background */
+  body {
+    background-color: var(--morandi-bg);
+  }
+
+  .post-detail {
+    background-color: white;
+    border: none;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  }
+
+  .post-header h1 {
+    color: var(--morandi-dark);
+  }
+
+  .category-badge {
+    background-color: var(--morandi-accent);
+    color: white;
+  }
+
+  .post-content {
+    color: var(--morandi-text);
+  }
+
+  /* Delete Button Styles - Enhanced Version with improved visual feedback */
+  .delete-btn {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 14px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+    box-shadow: 0 2px 8px rgba(231, 76, 60, 0.2);
+  }
+
+  .delete-btn:hover {
+    background-color: #c0392b;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+  }
+
+  .delete-btn:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 4px rgba(231, 76, 60, 0.3);
+  }
+
+  .delete-btn i {
+    font-size: 1rem;
+  }
+
+  /* Add Success Animation for Post Deletion - Visual confirmation for users */
+  .delete-success {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(231, 76, 60, 0.97);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 1100;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.4s ease;
+  }
+
+  .delete-success.show {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .delete-success i {
+    font-size: 5rem;
+    margin-bottom: 20px;
+    animation: fadeInZoom 0.5s ease forwards;
+  }
+
+  .delete-success-message {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 0.5s ease forwards 0.2s;
+  }
+
+  .delete-success-submessage {
+    font-size: 1.1rem;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 0.5s ease forwards 0.4s;
+  }
+
+  @keyframes fadeInZoom {
+    from {
+      opacity: 0;
+      transform: scale(0.5);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Enhanced Confirmation Dialog Styles - Improved visual feedback for user actions */
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    backdrop-filter: blur(3px);
+  }
+
+  .modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .modal-container {
+    background-color: white;
+    padding: 0;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+    transform: translateY(-30px) scale(0.95);
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    overflow: hidden;
+    line-height: normal;
+  }
+
+  .modal-overlay.active .modal-container {
+    transform: translateY(0) scale(1);
+  }
+
+  .modal-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: white;
+    margin: 0;
+    padding: 16px 20px;
+    background-color: #e74c3c;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    letter-spacing: 1px;
+  }
+
+  .modal-title i {
+    font-size: 1.5rem;
+  }
+
+  .modal-content {
+    color: var(--text);
+    padding: 25px;
+    line-height: 1.6;
+    font-size: 1.05rem;
+  }
+
+  .modal-content strong {
+    color: #e74c3c;
+    display: block;
+    margin-top: 10px;
+    font-weight: 600;
+  }
+
+  .modal-buttons {
+    display: flex;
+    justify-content: space-between;
+    border-top: 1px solid #eee;
+  }
+
+  .modal-btn {
+    padding: 15px 10px;
+    border: none;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex: 1;
+    white-space: nowrap;
+    letter-spacing: 1px;
+  }
+
+  .modal-btn-cancel {
+    background-color: #f8f9fa;
+    color: #495057;
+    border-right: 1px solid #eee;
+    margin-right: 5px;
+  }
+
+  .modal-btn-cancel:hover {
+    background-color: #e9ecef;
+  }
+
+  .modal-btn-confirm {
+    background-color: #e74c3c;
+    color: white;
+    margin-left: 5px;
+  }
+
+  .modal-btn-confirm:hover {
+    background-color: #b33939;
+  }
+</style>
+
+<script>
+  // Read More feature
+  function toggleContent() {
+    const preview = document.getElementById('content-preview');
+    const full = document.getElementById('content-full');
+    const moreBtn = document.getElementById('read-more-btn');
+    const lessBtn = document.getElementById('read-less-btn');
+
+    if (preview.style.display !== 'none') {
+      // Expand full text
+      preview.style.display = 'none';
+      full.style.display = 'block';
+      moreBtn.style.display = 'none';
+      lessBtn.style.display = 'inline-block';
+    } else {
+      // Collapse content
+      preview.style.display = 'block';
+      full.style.display = 'none';
+      moreBtn.style.display = 'inline-block';
+      lessBtn.style.display = 'none';
+    }
+  }
+
+  // Client-side enhancement for like functionality
+  document.addEventListener('DOMContentLoaded', function() {
+    // Get like form
+    const likeForm = document.querySelector('.like-form');
+    if (likeForm) {
+      likeForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        // Get like button and count elements
+        const likeBtn = this.querySelector('.like-btn');
+        const likeIcon = likeBtn.querySelector('i');
+        const likeText = likeBtn.querySelector('span');
+        const likesCountElement = document.querySelector('.likes-count');
+        const currentLikesText = likesCountElement.textContent;
+
+        // Extract current like count
+        const currentLikesMatch = currentLikesText.match(/(\d+)/);
+        let likesCount = currentLikesMatch ? parseInt(currentLikesMatch[1]) : 0;
+
+        // Toggle like status
+        if (likeBtn.classList.contains('liked')) {
+          // Unlike
+          likeBtn.classList.remove('liked');
+          likeIcon.className = 'far fa-heart';
+          likeText.textContent = 'Like';
+          if (likesCount > 0) {
+            likesCount--;
+          }
+        } else {
+          // Like
+          likeBtn.classList.add('liked');
+          likeIcon.className = 'fas fa-heart';
+          likeText.textContent = 'Unlike';
+          likesCount++;
+        }
+
+        // Update like count display
+        likesCountElement.innerHTML = '<i class="fas fa-heart"></i> ' + likesCount + ' Likes';
+
+        // Submit form to server
+        fetch(this.action, {
+          method: 'POST',
+          body: new FormData(this),
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+          }
+        }).catch(error => {
+          console.error('Error:', error);
+        });
+      });
+    }
+  });
+</script>
+
+<!-- Delete Confirmation Dialog -->
+<div class="modal-overlay" id="delete-confirm-modal">
+  <div class="modal-container" style="width: 300px; max-width: 80%; line-height: 1.2;">
+    <div class="modal-title" style="font-size: 16px; padding: 12px;">
+      <i class="fas fa-exclamation-triangle"></i>Confirm Delete
+    </div>
+    <div class="modal-content" style="padding: 10px 15px; text-align: center;">
+    </div>
+    <div class="modal-buttons" style="display: flex;">
+      <button class="modal-btn modal-btn-cancel" id="cancel-delete-btn" style="padding: 10px; font-size: 14px;">Cancel</button>
+      <button class="modal-btn modal-btn-confirm" id="confirm-delete-btn" style="padding: 10px; font-size: 14px;">Delete</button>
+    </div>
+    <div style="padding: 10px 15px; text-align: center; background-color: #fff3f3;">
+      <strong style="display: block; margin: 5px 0; color: #e74c3c; font-size: 12px;">This action cannot be undone!</strong>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Success Animation -->
+<div class="delete-success" id="delete-success">
+  <i class="fas fa-check-circle"></i>
+  <div class="delete-success-message">Post deleted successfully!</div>
+  <div class="delete-success-submessage">Returning to homepage...</div>
+</div>
+
+<!-- JavaScript for post deletion -->
+<script>
+  // Handle post deletion
+  document.addEventListener('DOMContentLoaded', function() {
+    const deleteBtn = document.getElementById('delete-post-btn');
+    const modal = document.getElementById('delete-confirm-modal');
+    const cancelBtn = document.getElementById('cancel-delete-btn');
+    const confirmBtn = document.getElementById('confirm-delete-btn');
+
+    // Show confirmation dialog
+    if (deleteBtn) {
+      deleteBtn.addEventListener('click', function() {
+        modal.classList.add('active');
+      });
+    }
+
+    // Cancel deletion
+    cancelBtn.addEventListener('click', function() {
+      modal.classList.remove('active');
+    });
+
+    // Click confirm delete button
+    confirmBtn.addEventListener('click', function() {
+      // Hide confirmation dialog
+      modal.classList.remove('active');
+
+      // Show delete animation, add delay so dialog disappears first
+      setTimeout(() => {
+        const successScreen = document.getElementById('delete-success');
+        successScreen.classList.add('show');
+
+        // Create form submission (delay form submit to show animation)
+        setTimeout(() => {
+          const form = document.createElement('form');
+          form.method = 'POST';
+          form.action = '/post/{{ post.id }}/delete';
+          form.style.display = 'none';
+
+          const csrfInput = document.createElement('input');
+          csrfInput.type = 'hidden';
+          csrfInput.name = 'csrf_token';
+          csrfInput.value = '{{ csrf_token() }}';
+          form.appendChild(csrfInput);
+
+          document.body.appendChild(form);
+          form.submit();
+        }, 1500); // Wait 1.5 seconds before submitting to show complete animation
+      }, 300);
+    });
+
+    // Close dialog when clicking overlay
+    modal.addEventListener('click', function(e) {
+      if (e.target === modal) {
+        modal.classList.remove('active');
+      }
+    });
+  });
+</script>
+
+<!-- Image Viewing Modal Dialog - Allows users to view images in larger format -->
+<div id="image-modal" class="image-modal">
+  <span class="close-modal">&times;</span>
+  <img class="modal-content" id="modal-image">
+</div>
+
+<style>
+/* Image Display Related Styles - For image preview modal */
+.post-images {
+  margin: 20px 0;
+}
+
+.image-gallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.gallery-item {
+  flex: 0 0 calc(33.33% - 10px);
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.gallery-item img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+  cursor: pointer;
+}
+
+.gallery-item img:hover {
+  transform: scale(1.05);
+}
+
+/* photo style */
+.image-modal {
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.9);
+  overflow: auto;
+}
+
+.close-modal {
+  position: absolute;
+  top: 15px;
+  right: 35px;
+  color: #f1f1f1;
+  font-size: 40px;
+  font-weight: bold;
+  transition: 0.3s;
+  cursor: pointer;
+}
+
+.close-modal:hover,
+.close-modal:focus {
+  color: #bbb;
+  text-decoration: none;
+}
+
+.modal-content {
+  margin: auto;
+  display: block;
+  max-width: 90%;
+  max-height: 90%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+@media (max-width: 768px) {
+  .gallery-item {
+    flex: 0 0 calc(50% - 10px);
+  }
+}
+
+@media (max-width: 480px) {
+  .gallery-item {
+    flex: 0 0 100%;
+  }
+}
+</style>
+
+<script>
+// Image Modal Functionality - Handle viewing images in full screen modal
+function openImageModal(imageSrc) {
+  const modal = document.getElementById('image-modal');
+  const modalImg = document.getElementById('modal-image');
+  modal.style.display = "block";
+  modalImg.src = imageSrc;
+
+  // Prevent page scrolling when modal is open
+  document.body.style.overflow = 'hidden';
+}
+
+// Close the image modal when X button is clicked
+document.querySelector('.close-modal').addEventListener('click', function() {
+  document.getElementById('image-modal').style.display = "none";
+  document.body.style.overflow = 'auto';
+});
+
+// Also allow closing the modal by clicking on the background overlay
+document.getElementById('image-modal').addEventListener('click', function(e) {
+  if (e.target === this) {
+    this.style.display = "none";
+    document.body.style.overflow = 'auto';
+  }
+});
+</script>
+{% endblock %}

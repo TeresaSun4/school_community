@@ -1,0 +1,830 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1 class="main-title">Campus Community</h1>
+            <h2 class="subtitle2">Hapori  Puni</h2>            
+            <p class="subtitle">Connect, Share, and Grow Together</p>
+
+            {% if not current_user.is_authenticated %}
+            <div class="action-buttons">
+                <a href="{{ url_for('signup') }}" class="btn btn-primary">Join Now</a>
+                <a href="{{ url_for('login') }}" class="btn btn-secondary">Sign In</a>
+            </div>
+            {% else %}
+            <div class="action-buttons">
+                <a href="{{ url_for('create_post') }}" class="btn btn-create-post"><i class="fas fa-plus-circle"></i> Create New Post</a>
+            </div>
+            {% endif %}
+        </div>
+        <div class="abstract-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+        </div>
+    </section>
+
+    <!-- Category Navigation -->
+    <section class="categories">
+        {% if current_user.is_authenticated %}
+        <div class="category-header">
+            <h3 class="category-title">Post Categories</h3>
+            <a href="{{ url_for('create_post') }}" class="btn-create-post-small"><i class="fas fa-plus-circle"></i> New Post</a>
+        </div>
+        {% endif %}
+        <div class="category-list">
+            <a href="{{ url_for('index', category='all') }}" class="category-item {% if current_category == 'all' %}active{% endif %}">
+                <i class="fas fa-th-large"></i> All Posts
+            </a>
+            <a href="{{ url_for('index', category='academic') }}" class="category-item {% if current_category == 'academic' %}active{% endif %}">
+                <i class="fas fa-graduation-cap"></i> Academic
+            </a>
+            <a href="{{ url_for('index', category='social') }}" class="category-item {% if current_category == 'social' %}active{% endif %}">
+                <i class="fas fa-users"></i> Social
+            </a>
+            <a href="{{ url_for('index', category='events') }}" class="category-item {% if current_category == 'events' %}active{% endif %}">
+                <i class="fas fa-calendar-alt"></i> Events
+            </a>
+            <a href="{{ url_for('index', category='help') }}" class="category-item {% if current_category == 'help' %}active{% endif %}">
+                <i class="fas fa-hands-helping"></i> Help
+            </a>
+            <a href="{{ url_for('index', category='general') }}" class="category-item {% if current_category == 'general' %}active{% endif %}">
+                <i class="fas fa-comment"></i> General
+            </a>
+        </div>
+    </section>
+
+    <!-- Posts Section -->
+    <div class="posts-grid">
+        {% for post in posts.items %}
+        <div class="post-card">
+            <div class="post-header">
+                <div class="author-info">
+                    {% if post.author.avatar %}
+                    <img src="{{ url_for('static', filename='uploads/' + post.author.avatar) }}" class="avatar">
+                    {% else %}
+                    <div class="avatar-placeholder">{{ post.author.username|first|upper }}</div>
+                    {% endif %}
+                    <span class="author-name">{{ post.author.username }}</span>
+                </div>
+                <div class="post-meta">
+                    <span class="date"><i class="far fa-clock"></i> {{ post.created_at.strftime('%b %d, %Y') }}</span>
+                    <span class="category"><i class="fas fa-tag"></i> {{ post.category|capitalize }}</span>
+                </div>
+            </div>
+            <div class="post-body">
+                <h2 class="post-title"><a href="{{ url_for('view_post', post_id=post.id) }}">{{ post.title }}</a></h2>
+                <p class="post-excerpt">{{ post.content|truncate(150) }}</p>
+            </div>
+            <div class="post-footer">
+                <div class="post-actions">
+                    <a href="{{ url_for('view_post', post_id=post.id) }}#comments" class="comments-link">
+                        <i class="far fa-comment"></i> {{ post.comments|length }} Comments
+                    </a>
+                    <div class="like-container" data-post-id="{{ post.id }}">
+                        <button type="button" class="like-btn-small {% if current_user.is_authenticated and current_user.has_liked_post(post) %}liked{% endif %}" 
+                                data-liked="{% if current_user.is_authenticated and current_user.has_liked_post(post) %}true{% else %}false{% endif %}"
+                                {% if not current_user.is_authenticated %}onclick="window.location.href='{{ url_for('login') }}'"{% endif %}>
+                            <i class="{% if current_user.is_authenticated and current_user.has_liked_post(post) %}fas{% else %}far{% endif %} fa-heart"></i>
+                        </button>
+                    </div>
+                </div>
+                <a href="{{ url_for('view_post', post_id=post.id) }}" class="read-more">
+                    Read More <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if posts.pages > 1 %}
+    <div class="pagination">
+        {% if posts.has_prev %}
+        <a href="{{ url_for('index', category=current_category, page=posts.prev_num) }}" class="page-link prev">
+            <i class="fas fa-chevron-left"></i> Previous
+        </a>
+        {% else %}
+        <span class="page-link disabled"><i class="fas fa-chevron-left"></i> Previous</span>
+        {% endif %}
+
+        {% for page in posts.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+        {% if page %}
+        {% if page == posts.page %}
+        <span class="page-number current">{{ page }}</span>
+        {% else %}
+        <a href="{{ url_for('index', category=current_category, page=page) }}" class="page-number">{{ page }}</a>
+        {% endif %}
+        {% else %}
+        <span class="page-ellipsis">…</span>
+        {% endif %}
+        {% endfor %}
+
+        {% if posts.has_next %}
+        <a href="{{ url_for('index', category=current_category, page=posts.next_num) }}" class="page-link next">
+            Next <i class="fas fa-chevron-right"></i>
+        </a>
+        {% else %}
+        <span class="page-link disabled">Next <i class="fas fa-chevron-right"></i></span>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Platform Features Section -->
+    <section class="features">
+        <h2 class="section-title">Our Platform Features</h2>
+        <div class="features-container">
+            <div class="feature">
+                <div class="feature-icon"><i class="fas fa-users"></i></div>
+                <h3>Community</h3>
+                <p>Connect with like-minded students and share your ideas</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon"><i class="fas fa-graduation-cap"></i></div>
+                <h3>Academic Resources</h3>
+                <p>Access and share study materials to enhance your learning</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon"><i class="fas fa-calendar-alt"></i></div>
+                <h3>Events</h3>
+                <p>Stay updated on campus events and activities</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon"><i class="fas fa-hands-helping"></i></div>
+                <h3>Support</h3>
+                <p>Get help or provide assistance to fellow students</p>
+            </div>
+        </div>
+    </section>
+</div>
+
+<style>
+    /* Key Page */
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 30px 20px;
+    }
+
+    /* Create Post Button Styling */
+    .btn-create-post {
+        background-color: var(--secondary);
+        color: white;
+        font-weight: bold;
+        padding: 12px 25px;
+        border-radius: var(--radius-md);
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        font-size: 1.1rem;
+        animation: pulse 2s infinite;
+    }
+
+    /* Category Header with Button */
+    .category-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+    .category-title {
+        margin: 0;
+        font-size: 1.3rem;
+        color: var(--primary);
+    }
+
+    .btn-create-post-small {
+        background-color: var(--secondary);
+        color: white;
+        padding: 8px 16px;
+        border-radius: var(--radius-md);
+        font-weight: 600;
+        font-size: 0.95rem;
+        display: inline-flex;
+        align-items: center;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .btn-create-post-small i {
+        margin-right: 6px;
+    }
+
+    .btn-create-post-small:hover {
+        background-color: var(--secondary-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        color: white;
+    }
+
+    .btn-create-post i {
+        margin-right: 8px;
+        font-size: 1.2rem;
+    }
+
+    .btn-create-post:hover {
+        background-color: var(--secondary-dark);
+        transform: translateY(-3px);
+        box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        color: white;
+    }
+
+    @keyframes pulse {
+        0% {
+            box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.4);
+        }
+        70% {
+            box-shadow: 0 0 0 10px rgba(212, 175, 55, 0);
+        }
+        100% {
+            box-shadow: 0 0 0 0 rgba(212, 175, 55, 0);
+        }
+    }
+
+    /* Hero Section */
+    .hero {
+        background: var(--primary-gradient);
+        color: white;
+        border-radius: var(--radius-lg);
+        padding: 60px 30px;
+        text-align: center;
+        margin-bottom: 30px;
+        box-shadow: var(--shadow-lg);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='152' height='152' viewBox='0 0 152 152'%3E%3Cg fill-rule='evenodd'%3E%3Cg id='temple' fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M152 150v2H0v-2h28v-8H8v-20H0v-2h8V80h42v20h20v42H30v8h90v-8H80v-42h20V80h42v40h8V30h-8v40h-42V50H80V8h40V0h2v8h20v20h8V0h2v150zm-2 0v-28h-8v20h-20v8h28zM82 30v18h18V30H82zm20 18h20v20h18V30h-20V10H82v18h20v20zm0 2v18h18V50h-18zm20-22h18V10h-18v18zm-54 92v-18H50v18h18zm-20-18H28V82H10v38h20v20h38v-18H48v-20zm0-2V82H30v18h18zm-20 22H10v18h18v-18zm54 0v18h38v-20h20V82h-18v20h-20v20H82zm18-20H82v18h18v-18zm2-2h18V82h-18v18zm20 40v-18h18v18h-18zM30 0h-2v8H8v20H0v2h8v40h42V50h20V8H30V0zm20 48h18V30H50v18zm18-20H48v20H28v20H10V30h20V10h38v18zM30 50h18v18H30V50zm-2-40H10v18h18V10z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        opacity: 0.1;
+    }
+
+    .main-title {
+        font-size: 3.5rem;
+        font-weight: 800;
+        margin-bottom: 15px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .subtitle {
+        font-size: 1.5rem;
+        opacity: 0.9;
+        margin-bottom: 30px;
+        position: relative;
+        z-index: 1;
+        max-width: 700px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .action-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .btn {
+        padding: 12px 28px;
+        border-radius: var(--radius-md);
+        font-weight: 600;
+        font-size: 1rem;
+        text-decoration: none;
+        transition: all var(--transition-normal);
+    }
+
+    .btn-primary {
+        background-color: white;
+        color: var(--primary);
+    }
+
+    .btn-secondary {
+        background-color: rgba(255, 255, 255, 0.2);
+        color: white;
+        border: 2px solid white;
+    }
+
+    .btn:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-md);
+    }
+
+    /* Abstract shapes */
+    .abstract-shapes {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        z-index: 0;
+    }
+
+    .shape {
+        position: absolute;
+        border-radius: 50%;
+    }
+
+    .shape-1 {
+        width: 200px;
+        height: 200px;
+        background-color: rgba(255, 255, 255, 0.1);
+        top: -50px;
+        right: 10%;
+    }
+
+    .shape-2 {
+        width: 300px;
+        height: 300px;
+        background-color: rgba(255, 255, 255, 0.05);
+        bottom: -100px;
+        left: -50px;
+    }
+
+    .shape-3 {
+        width: 150px;
+        height: 150px;
+        background-color: rgba(255, 255, 255, 0.1);
+        top: 40%;
+        right: 20%;
+    }
+
+    /* Categories */
+    .categories {
+        background-color: white;
+        border-radius: var(--radius-md);
+        padding: 15px;
+        margin-bottom: 30px;
+        box-shadow: var(--shadow-md);
+    }
+
+    .category-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .category-item {
+        padding: 10px 20px;
+        border-radius: var(--radius-md);
+        background-color: var(--gray-100);
+        color: var(--text);
+        text-decoration: none;
+        transition: all var(--transition-normal);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 500;
+    }
+
+    .category-item:hover {
+        background-color: var(--gray-200);
+    }
+
+    .category-item.active {
+        background-color: var(--primary);
+        color: white;
+    }
+
+    /* Posts Grid */
+    .posts-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 25px;
+        margin-bottom: 40px;
+    }
+
+    .post-card {
+        background-color: white;
+        border-radius: var(--radius-md);
+        overflow: hidden;
+        box-shadow: var(--shadow-md);
+        transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .post-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .post-header {
+        padding: 18px;
+        border-bottom: 1px solid var(--gray-200);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .author-info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .avatar, .avatar-placeholder {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    .avatar-placeholder {
+        background-color: var(--primary);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+    }
+
+    .author-name {
+        font-weight: 600;
+        color: var(--text);
+    }
+
+    .post-meta {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 5px;
+        font-size: 0.85rem;
+        color: var(--text-light);
+    }
+
+    .post-body {
+        padding: 18px;
+        flex: 1;
+    }
+
+    .post-title {
+        margin-bottom: 10px;
+        font-size: 1.4rem;
+        line-height: 1.3;
+    }
+
+    .post-title a {
+        color: var(--text);
+        text-decoration: none;
+        transition: color var(--transition-fast);
+    }
+
+    .post-title a:hover {
+        color: var(--primary);
+    }
+
+    .post-excerpt {
+        color: var(--text-light);
+        line-height: 1.6;
+        margin-bottom: 15px;
+    }
+
+    .post-footer {
+        padding: 15px 18px;
+        border-top: 1px solid var(--gray-200);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .comments-link, .read-more {
+        text-decoration: none;
+        transition: all var(--transition-fast);
+        font-size: 0.95rem;
+    }
+
+    .comments-link {
+        color: var(--text-light);
+    }
+
+    .read-more {
+        color: var(--primary);
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .comments-link:hover {
+        color: var(--text);
+    }
+
+    .read-more:hover {
+        color: var(--primary-dark);
+    }
+
+    .read-more:hover i {
+        transform: translateX(3px);
+    }
+
+    .read-more i {
+        transition: transform var(--transition-normal);
+    }
+
+    /* Pagination - Consistent styling with profile page pagination for UI coherence */
+    .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        margin: 30px 0;
+    }
+
+    .page-link, .page-number {
+        padding: 10px 15px;
+        border-radius: var(--radius-md);
+        background-color: white;
+        color: var(--text);
+        text-decoration: none;
+        transition: all var(--transition-fast);
+        box-shadow: var(--shadow-sm);
+        font-weight: 500;
+    }
+
+    .page-link {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .page-number.current {
+        background-color: var(--primary);
+        color: white;
+    }
+
+    .page-link:hover, .page-number:hover {
+        background-color: var(--gray-100);
+    }
+
+    .page-link.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .page-link.disabled:hover {
+        background-color: white;
+    }
+
+    .page-ellipsis {
+        color: var(--text-light);
+    }
+
+    /* Features Section */
+    .features {
+        margin-top: 60px;
+        padding: 30px 0;
+    }
+
+    .section-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--primary-dark);
+        margin-bottom: 30px;
+        text-align: center;
+        position: relative;
+    }
+
+    .section-title:after {
+        content: '';
+        position: absolute;
+        width: 80px;
+        height: 3px;
+        background: var(--primary-gradient);
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        border-radius: 3px;
+    }
+
+    .features-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 30px;
+    }
+
+    .feature {
+        background-color: white;
+        border-radius: var(--radius-md);
+        padding: 25px;
+        text-align: center;
+        box-shadow: var(--shadow-md);
+        transition: transform var(--transition-normal);
+    }
+
+    .feature:hover {
+        transform: translateY(-5px);
+    }
+
+    .feature-icon {
+        width: 70px;
+        height: 70px;
+        background: var(--primary-gradient);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        color: white;
+        font-size: 1.8rem;
+    }
+
+    .feature h3 {
+        font-size: 1.4rem;
+        color: var(--text);
+        margin-bottom: 15px;
+    }
+
+    .feature p {
+        color: var(--text-light);
+        line-height: 1.6;
+    }
+
+
+    /* Like Button Styles - Visual feedback for engagement actions */
+    .post-actions {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .like-container {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .likes-count-small {
+        font-size: 0.9rem;
+        color: var(--text-light);
+    }
+
+    .like-btn-small {
+        background: none;
+        border: none;
+        padding: 5px 8px;
+        cursor: pointer;
+        color: var(--text-light);
+        transition: all 0.2s ease;
+        border-radius: 50%;
+    }
+
+    .like-btn-small i {
+        font-size: 1.1rem;
+        transition: transform 0.2s ease, color 0.2s ease;
+    }
+
+    .like-btn-small.liked i {
+        color: #f44336 !important;
+    }
+
+    .like-btn-small:hover {
+        background-color: rgba(244, 67, 54, 0.1);
+    }
+
+    .like-btn-small:hover i {
+        transform: scale(1.1);
+        color: #f44336;
+    }
+
+    .like-btn-small:active i {
+        transform: scale(0.9);
+    }
+
+    /* Enhanced Like Button Styles - Animated effects for better user feedback */
+    .like-btn-small {
+        cursor: pointer;
+        outline: none;
+        border: none;
+        padding: 8px;
+        border-radius: 50%;
+        background: transparent;
+        transition: all 0.3s ease;
+    }
+
+    .like-btn-small i {
+        font-size: 1.2rem;
+        color: #999;
+        transition: all 0.3s ease;
+    }
+
+    @media (max-width: 768px) {
+        .posts-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .features-container {
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        }
+
+        .main-title {
+            font-size: 2.8rem;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+        }
+    }
+</style>
+
+<script>
+// Like Functionality JavaScript - Handles user interactions with post likes
+document.addEventListener('DOMContentLoaded', function() {
+    // Add click event handlers to all like buttons
+    const likeButtons = document.querySelectorAll('.like-btn-small');
+
+    // Initialize like status based on server data
+    likeButtons.forEach(button => {
+        // Get initial like status from button attributes
+        const isLiked = button.dataset.liked === 'true';
+        const likeIcon = button.querySelector('i');
+
+        // Ensure correct styling based on like status
+        if (isLiked) {
+            button.classList.add('liked');
+            likeIcon.className = 'fas fa-heart';
+        } else {
+            button.classList.remove('liked');
+            likeIcon.className = 'far fa-heart';
+        }
+
+        // Add like events only for logged-in users (buttons without onclick attribute)
+        if (!button.hasAttribute('onclick')) {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                console.log('Like button clicked');
+
+                const likeContainer = this.closest('.like-container');
+                const postId = likeContainer.dataset.postId;
+                const likesCountElement = likeContainer.querySelector('.likes-count-small');
+
+                // Check current like status to determine action
+                const isLiked = this.classList.contains('liked');
+                console.log('Current like status:', isLiked);
+
+                // Toggle like status in the UI
+                if (isLiked) {
+                    this.classList.remove('liked');
+                    likeIcon.className = 'far fa-heart';
+                    this.dataset.liked = 'false';
+                } else {
+                    this.classList.add('liked');
+                    likeIcon.className = 'fas fa-heart';
+                    this.dataset.liked = 'true';
+                }
+
+                // Send request to server to update like status
+                fetch('/api/like/' + postId, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRFToken': '{{ csrf_token() }}'
+                    },
+                    credentials: 'same-origin'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Server response:', data);
+                    if (data.success) {
+                        // Update like count displayed to user
+                        if (likesCountElement) {
+                            likesCountElement.textContent = data.likes_count;
+                        }
+
+                        // Ensure UI reflects correct server state
+                        if (data.action === 'liked') {
+                            this.classList.add('liked');
+                            likeIcon.className = 'fas fa-heart';
+                            this.dataset.liked = 'true';
+
+                        } else {
+                            this.classList.remove('liked');
+                            likeIcon.className = 'far fa-heart';
+                            this.dataset.liked = 'false';
+
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Like request error:', error);
+                });
+            });
+        }
+    });
+});
+</script>
+{% endblock %}

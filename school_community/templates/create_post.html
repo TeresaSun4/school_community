@@ -1,0 +1,483 @@
+{% extends "base.html" %}
+
+{% block head %}
+<style>
+.post-editor-container {
+  max-width: 900px;
+  margin: 2rem auto;
+}
+
+.post-editor-card {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.editor-header {
+  background: var(--primary-gradient);
+  padding: 2rem;
+  color: var(--white);
+  position: relative;
+}
+
+.editor-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url("data:image/svg+xml,%3Csvg width='52' height='26' viewBox='0 0 52 26' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M10 10c0-2.21-1.79-4-4-4-3.314 0-6-2.686-6-6h2c0 2.21 1.79 4 4 4 3.314 0 6 2.686 6 6 0 2.21 1.79 4 4 4 3.314 0 6 2.686 6 6 0 2.21 1.79 4 4 4v2c-3.314 0-6-2.686-6-6 0-2.21-1.79-4-4-4-3.314 0-6-2.686-6-6zm25.464-1.95l8.486 8.486-1.414 1.414-8.486-8.486 1.414-1.414z' /%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  z-index: 0;
+}
+
+.editor-header h1 {
+  margin: 0;
+  font-size: 2.2rem;
+  font-weight: 800;
+  position: relative;
+  z-index: 1;
+}
+
+.editor-header p {
+  margin: 0.5rem 0 0;
+  opacity: 0.9;
+  font-size: 1.1rem;
+  position: relative;
+  z-index: 1;
+}
+
+.editor-body {
+  padding: 2rem;
+}
+
+.post-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  font-weight: 600;
+  color: var(--primary-dark);
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.form-group label i {
+  color: var(--primary);
+  font-size: 1.1rem;
+}
+
+.form-control {
+  width: 100%;
+  padding: 1rem;
+  border: 2px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  font-family: var(--font-primary);
+  font-size: 1rem;
+  transition: all var(--transition-normal);
+}
+
+.form-control:focus {
+  border-color: var(--primary-light);
+  box-shadow: var(--shadow-focus);
+  outline: none;
+}
+
+.form-control::placeholder {
+  color: var(--gray-400);
+}
+
+select.form-control {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%234F709C' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") no-repeat;
+  background-position: right 1rem center;
+  background-size: 1.2em;
+  padding-right: 3rem;
+}
+
+textarea.form-control {
+  min-height: 200px;
+  resize: vertical;
+}
+
+.form-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 0.5rem;
+  color: var(--text-light);
+  font-size: 0.875rem;
+}
+
+.char-counter {
+  font-family: monospace;
+  font-size: 0.9rem;
+}
+
+.form-text {
+  color: var(--text-light);
+  font-size: 0.875rem;
+  margin-top: 0.3rem;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.btn {
+  padding: 0.9rem 2rem;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: 1rem;
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.btn-primary {
+  background: var(--primary-gradient);
+  color: var(--white);
+  box-shadow: var(--shadow);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.btn-secondary {
+  background: var(--gray-100);
+  color: var(--text);
+}
+
+.btn-secondary:hover {
+  background: var(--gray-200);
+}
+
+.file-upload {
+  position: relative;
+}
+
+.file-upload label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 2rem;
+  background: var(--gray-50);
+  border: 2px dashed var(--gray-300);
+  border-radius: var(--radius-md);
+  color: var(--text-light);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  text-align: center;
+}
+
+.file-upload:hover label {
+  border-color: var(--primary-light);
+  background: var(--primary-light);
+  color: var(--primary-dark);
+}
+
+.file-upload input[type="file"] {
+  position: absolute;
+  left: -9999px;
+}
+
+.image-preview {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.preview-item {
+  position: relative;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.preview-item img {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  display: block;
+}
+
+.remove-btn {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.8);
+  border: none;
+  color: var(--error);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+}
+
+.remove-btn:hover {
+  background: var(--white);
+  transform: scale(1.1);
+}
+
+.flash {
+  padding: 1rem;
+  border-radius: var(--radius-md);
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  animation: slideIn 0.3s ease forwards;
+}
+
+.flash.success {
+  background-color: var(--success-light);
+  color: var(--success);
+}
+
+.flash.error {
+  background-color: var(--error-light);
+  color: var(--error);
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Category Pills */
+.category-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin-top: 0.5rem;
+}
+
+.category-pill {
+  display: none;
+}
+
+.category-pill + label {
+  padding: 0.5rem 1.2rem;
+  border-radius: var(--radius-full);
+  background: var(--gray-100);
+  color: var(--text);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  border: 2px solid transparent;
+}
+
+.category-pill + label:hover {
+  background: var(--primary-light);
+  color: var(--primary-dark);
+}
+
+.category-pill:checked + label {
+  background: var(--primary-light);
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container post-editor-container">
+  <div class="post-editor-card">
+    <div class="editor-header">
+      <h1>Create New Post</h1>
+      <p>Share your thoughts with the community</p>
+    </div>
+
+    <div class="editor-body">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="flash {{ category }}">
+              <i class="fas {% if category == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %}"></i>
+              <span>{{ message }}</span>
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      <form method="POST" class="post-form" enctype="multipart/form-data">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
+        <div class="form-group">
+          <label for="title"><i class="fas fa-heading"></i> Title</label>
+          <input
+            type="text"
+            id="title"
+            name="title"
+            class="form-control"
+            placeholder="Enter a compelling title (5-100 characters)"
+            minlength="5"
+            maxlength="100"
+            required
+          >
+        </div>
+
+        <div class="form-group">
+          <label><i class="fas fa-tags"></i> Category</label>
+          <div class="category-pills">
+            <input type="radio" id="cat-general" name="category" value="general" class="category-pill" checked>
+            <label for="cat-general">General</label>
+
+            <input type="radio" id="cat-academic" name="category" value="academic" class="category-pill">
+            <label for="cat-academic">Academic</label>
+
+            <input type="radio" id="cat-social" name="category" value="social" class="category-pill">
+            <label for="cat-social">Social</label>
+
+            <input type="radio" id="cat-events" name="category" value="events" class="category-pill">
+            <label for="cat-events">Events</label>
+
+            <input type="radio" id="cat-help" name="category" value="help" class="category-pill">
+            <label for="cat-help">Help</label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="content"><i class="fas fa-pen-fancy"></i> Content</label>
+          <textarea
+            id="content"
+            name="content"
+            class="form-control"
+            placeholder="Share your thoughts, questions or insights..."
+            minlength="10"
+            required
+          ></textarea>
+          <div class="form-footer">
+            <div class="char-counter"><span id="char-count">0</span>/1000</div>
+            <small><i class="fab fa-markdown"></i> Markdown supported</small>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="file-upload">
+            <label for="images">
+              <i class="fas fa-cloud-upload-alt" style="font-size: 1.5rem;"></i>
+              <div>
+                <strong>Upload Image</strong>
+                <p>Drag and drop a file here or click to browse</p>
+                <small>Only 1 image allowed (max 2MB)</small>
+              </div>
+            </label>
+            <input type="file" id="images" name="images" accept="image/*">
+          </div>
+          <div id="image-preview" class="image-preview"></div>
+        </div>
+
+        <div class="form-actions">
+          <a href="{{ url_for('index') }}" class="btn btn-secondary">
+            <i class="fas fa-times"></i> Cancel
+          </a>
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-paper-plane"></i> Publish Post
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Character counter
+  document.getElementById('content').addEventListener('input', function(e) {
+    const count = e.target.value.length;
+    const charCount = document.getElementById('char-count');
+    charCount.textContent = count;
+
+    // Warning if over limit
+    if(count > 1000) {
+      charCount.style.color = 'var(--error)';
+    } else {
+      charCount.style.color = '';
+    }
+  });
+
+  // Image upload preview
+  document.getElementById('images').addEventListener('change', function(e) {
+    const file = e.target.files[0]; // Only get the first selected image
+    const previewContainer = document.getElementById('image-preview');
+
+    // Clear preview if already exists
+    if(previewContainer) {
+      previewContainer.innerHTML = '';
+    }
+
+    if(!file) {
+      return;
+    }
+
+    // Check file size
+    if(file.size > 2 * 1024 * 1024) {
+      alert(`Image "${file.name}" exceeds the 2MB limit`);
+      e.target.value = '';
+      return;
+    }
+
+    // Create preview
+    const reader = new FileReader();
+    reader.onload = function(event) {
+      const preview = document.createElement('div');
+      preview.className = 'preview-item';
+      preview.innerHTML = `
+        <img src="${event.target.result}" alt="Preview">
+        <button type="button" class="remove-btn">&times;</button>
+      `;
+
+      // Add remove functionality
+      preview.querySelector('.remove-btn').addEventListener('click', function() {
+        preview.remove();
+        e.target.value = ''; // Clear file input to allow selecting the same file again
+      });
+
+      previewContainer.appendChild(preview);
+    }
+    reader.readAsDataURL(file);
+  });
+</script>
+{% endblock %}

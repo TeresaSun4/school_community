@@ -1,0 +1,90 @@
+/* Search Page Gold Title Style */
+.search-hero h1 {
+  font-size: 2.8rem;
+  font-weight: 700;
+  margin-bottom: 1.8rem;
+  position: relative;
+  display: inline-block;
+  letter-spacing: -0.01em;
+
+  /* Gold Gradient Effect */
+  background: linear-gradient(135deg, #FFD700, #DAA520, #F5D78E, #D4AF37);
+  background-size: 300% 300%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+
+  /* Gloss Effect */
+  text-shadow: 
+    0px 2px 10px rgba(218, 165, 32, 0.4),
+    0px 4px 20px rgba(255, 215, 0, 0.2);
+
+  /* Animation Effect */
+  animation: searchGoldShimmer 8s infinite;
+}
+
+/* Gold Animation Effect */
+@keyframes searchGoldShimmer {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Beautified Search Form */
+.search-form {
+  max-width: 700px;
+  margin: 0 auto 2rem;
+}
+
+.search-input-group {
+  display: flex;
+  position: relative;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+  border-radius: 100px;
+  overflow: hidden;
+  border: 2px solid transparent;
+  background: 
+    linear-gradient(#fff, #fff) padding-box,
+    linear-gradient(135deg, rgba(255, 215, 0, 0.3), rgba(218, 165, 32, 0.3)) border-box;
+  transition: all 0.3s ease;
+}
+
+.search-input-group:focus-within {
+  background: 
+    linear-gradient(#fff, #fff) padding-box,
+    linear-gradient(135deg, #FFD700, #DAA520) border-box;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+.search-input {
+  flex: 1;
+  border: none;
+  padding: 1rem 1.5rem;
+  font-size: 1rem;
+  background: transparent;
+  outline: none;
+  width: 100%;
+  color: var(--text);
+}
+
+.search-input::placeholder {
+  color: var(--text-light);
+  opacity: 0.7;
+}
+
+.search-btn {
+  border: none;
+  background: linear-gradient(135deg, #FFD700, #DAA520);
+  color: var(--primary-dark);
+  font-weight: 600;
+  padding: 0 1.8rem;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+}
+
+.search-btn:hover {
+  background: linear-gradient(135deg, #DAA520, #FFD700);
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+}

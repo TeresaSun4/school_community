@@ -1,0 +1,322 @@
+{% extends "base.html" %}
+
+{% block head %}
+<style>
+/* Search page styles - consistent with other pages */
+.search-container {
+  max-width: 1000px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+/* Search section styles */
+.search-hero {
+  background: var(--primary-gradient);
+  border-radius: var(--radius-lg);
+  padding: 40px 30px;
+  margin-bottom: 30px;
+  color: white;
+  position: relative;
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+
+.search-hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='152' height='152' viewBox='0 0 152 152'%3E%3Cg fill-rule='evenodd'%3E%3Cg id='temple' fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M152 150v2H0v-2h28v-8H8v-20H0v-2h8V80h42v20h20v42H30v8h90v-8H80v-42h20V80h42v40h8V30h-8v40h-42V50H80V8h40V0h2v8h20v20h8V0h2v150zm-2 0v-28h-8v20h-20v8h28zM82 30v18h18V30H82zm20 18h20v20h18V30h-20V10H82v18h20v20zm0 2v18h18V50h-18zm20-22h18V10h-18v18zm-54 92v-18H50v18h18zm-20-18H28V82H10v38h20v20h38v-18H48v-20zm0-2V82H30v18h18zm-20 22H10v18h18v-18zm54 0v18h38v-20h20V82h-18v20h-20v20H82zm18-20H82v18h18v-18zm2-2h18V82h-18v18zm20 40v-18h18v18h-18zM30 0h-2v8H8v20H0v2h8v40h42V50h20V8H30V0zm20 48h18V30H50v18zm18-20H48v20H28v20H10V30h20V10h38v18zM30 50h18v18H30V50zm-2-40H10v18h18V10z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  opacity: 0.1;
+}
+
+.search-hero h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+  position: relative;
+  z-index: 1;
+}
+
+.search-form {
+  margin: 1rem 0;
+  position: relative;
+  z-index: 1;
+}
+
+.search-input-group {
+  display: flex;
+  background: white;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+}
+
+.search-input {
+  flex: 1;
+  border: none;
+  padding: 15px 20px;
+  font-size: 1rem;
+  font-family: var(--font-primary);
+}
+
+.search-input:focus {
+  outline: none;
+}
+
+.search-btn {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 0 25px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+}
+
+.search-btn:hover {
+  background: var(--primary-dark);
+}
+
+/* Results section styles */
+.search-results {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.result-card {
+  background: white;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+}
+
+.result-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-lg);
+}
+
+.result-header {
+  padding: 15px 20px;
+  border-bottom: 1px solid var(--gray-200);
+  color: var(--text-light);
+  font-size: 0.9rem;
+}
+
+.author-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.result-body {
+  padding: 20px;
+}
+
+.result-title {
+  font-size: 1.4rem;
+  margin-bottom: 15px;
+  line-height: 1.3;
+}
+
+.result-title a {
+  color: var(--primary);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.result-title a:hover {
+  color: var(--primary-dark);
+}
+
+.result-content {
+  color: var(--text);
+  line-height: 1.6;
+}
+
+.highlight-match {
+  background: var(--primary-light);
+  padding: 0 3px;
+  font-weight: 600;
+  border-radius: 2px;
+}
+
+/* No results style */
+.no-results {
+  text-align: center;
+  padding: 50px 30px;
+  background: white;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+}
+
+.no-results h2 {
+  font-size: 1.8rem;
+  color: var(--primary);
+  margin-bottom: 15px;
+}
+
+.no-results p {
+  color: var(--text-light);
+  margin-bottom: 25px;
+}
+
+.no-results .btn {
+  display: inline-block;
+  padding: 12px 25px;
+  background: var(--primary-gradient);
+  color: white;
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  font-weight: 600;
+  transition: all var(--transition-normal);
+}
+
+.no-results .btn:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Search stats */
+.search-stats {
+  margin-bottom: 20px;
+  color: var(--text);
+  font-weight: 500;
+}
+
+/* Pagination styles */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-top: 30px;
+}
+
+.page-link {
+  padding: 10px 15px;
+  border-radius: var(--radius-md);
+  background: white;
+  color: var(--text);
+  text-decoration: none;
+  transition: all var(--transition-normal);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.page-link:hover {
+  background: var(--gray-100);
+}
+
+.page-link.active {
+  background: var(--primary);
+  color: white;
+}
+
+.page-ellipsis {
+  color: var(--text-light);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="search-container">
+  <!-- Search section -->
+  <div class="search-hero">
+    <h1>Search Our Community</h1>
+
+    <form class="search-form" action="{{ url_for('search') }}" method="get">
+      <div class="search-input-group">
+        <input type="text" name="q" class="search-input" placeholder="Enter your search terms..." value="{{ query }}">
+        <button type="submit" class="search-btn">Search</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Results section -->
+  {% if query %}
+    {% if posts.items %}
+      <div class="search-stats">
+        Found {{ posts.total }} results for "<strong>{{ query }}</strong>"
+      </div>
+
+      <div class="search-results">
+        {% for post in posts.items %}
+          <div class="result-card">
+            <div class="result-header">
+              <div class="author-info">
+                {% if post.author.avatar %}
+                  <img src="{{ url_for('static', filename='uploads/' + post.author.avatar) }}" class="avatar-small" width="30" height="30" style="border-radius: 50%; object-fit: cover;">
+                {% else %}
+                  <div style="width: 30px; height: 30px; background-color: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">
+                    {{ post.author.username|first|upper }}
+                  </div>
+                {% endif %}
+                <span>{{ post.author.username }}</span>
+                <span style="margin: 0 5px;">•</span>
+                <span>{{ post.created_at.strftime('%b %d, %Y') }}</span>
+                <span style="margin: 0 5px;">•</span>
+                <span>{{ post.category|capitalize }}</span>
+              </div>
+            </div>
+
+            <div class="result-body">
+              <h2 class="result-title">
+                <a href="{{ url_for('view_post', post_id=post.id) }}">{{ post.title|highlight(query)|safe }}</a>
+              </h2>
+
+              <div class="result-content">
+                {{ post.content|highlight(query)|safe|truncate(200) }}
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+      <!-- Pagination -->
+      {% if posts.pages > 1 %}
+        <div class="pagination">
+          {% if posts.has_prev %}
+            <a href="{{ url_for('search', q=query, page=posts.prev_num) }}" class="page-link">
+              <i class="fas fa-chevron-left"></i> Previous
+            </a>
+          {% endif %}
+
+          {% for page in posts.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+            {% if page %}
+              {% if page == posts.page %}
+                <span class="page-link active">{{ page }}</span>
+              {% else %}
+                <a href="{{ url_for('search', q=query, page=page) }}" class="page-link">{{ page }}</a>
+              {% endif %}
+            {% else %}
+              <span class="page-ellipsis">…</span>
+            {% endif %}
+          {% endfor %}
+
+          {% if posts.has_next %}
+            <a href="{{ url_for('search', q=query, page=posts.next_num) }}" class="page-link">
+              Next <i class="fas fa-chevron-right"></i>
+            </a>
+          {% endif %}
+        </div>
+      {% endif %}
+
+    {% else %}
+      <!-- No Result -->
+      <div class="no-results">
+        <h2>No results found</h2>
+        <p>We couldn't find any results matching "<strong>{{ query }}</strong>"</p>
+        <p>Try using different keywords or check your spelling</p>
+        <a href="{{ url_for('index') }}" class="btn">Back to Home</a>
+      </div>
+    {% endif %}
+  {% endif %}
+</div>
+{% endblock %}

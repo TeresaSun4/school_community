@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#4F709C">
+    <title>Campus Community | {% block title %}{% endblock %}</title>
+
+    <!-- Favicon - Use SVG emoji as icon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏫</text></svg>">
+
+    <!-- Google Fonts preconnect - improve font loading performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <!-- Font loading - Poppins for UI, Lora/Playfair for content -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Lora:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- CSS stylesheets - separated by function -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/modern.css') }}">   <!-- Modern layout base -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/design.css') }}">   <!-- Design system -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">   <!-- Custom component styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/footer-modern.css') }}">   <!-- Modern footer styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar-modern.css') }}">   <!-- Modern navbar styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/hero-gold.css') }}">   <!-- Golden hero styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/search-gold.css') }}">   <!-- Golden search page -->
+
+    <!-- Font Awesome Icon Library -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+      /**
+       * Design system - color variables
+       * Uses Morandi palette to offer a soft, modern look
+       */
+      /* Notification system styles */
+      #notification-container {
+        position: fixed;
+        top: 80px;
+        right: 20px;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 10px;
+        pointer-events: none;
+      }
+
+      .notification {
+        padding: 12px 20px;
+        border-radius: 6px;
+        color: white;
+        max-width: 300px;
+        display: flex;
+        align-items: center;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        transform: translateX(120%);
+        opacity: 0;
+        transition: all 0.4s ease;
+        margin-bottom: 8px;
+        pointer-events: auto;
+        font-size: 0.95rem;
+      }
+
+      .notification.show {
+        transform: translateX(0);
+        opacity: 1;
+      }
+
+      .notification i {
+        margin-right: 10px;
+        font-size: 1.1rem;
+      }
+
+      .notification-content {
+        flex: 1;
+      }
+
+      .notification.success {
+        background-color: var(--success);
+      }
+
+      .notification.error {
+        background-color: var(--error);
+      }
+
+      .notification.info {
+        background-color: var(--info);
+      }
+
+      .notification.warning {
+        background-color: var(--warning);
+      }
+
+      :root {
+        /* Core palette */
+        --morandi-primary: #A8B2B9;    /* Primary - light grey-blue */
+        --morandi-secondary: #D1C8BF;  /* Secondary - pink-brown */
+        --morandi-accent: #B6A997;     /* Accent - warm brown */
+        --morandi-light: #E6DFD9;      /* Light - beige */
+        --morandi-dark: #697268;       /* Dark - olive grey */
+
+        /* Extended palette */
+        --morandi-red: #C4A29E;        /* Morandi red - for alerts and errors */
+        --morandi-green: #A7AFA2;      /* Morandi green - for success */
+        --morandi-blue: #96A7B6;       /* Morandi blue - for info and links */
+        --morandi-gold: #D4C9A8;       /* Morandi gold - for highlights */
+        --morandi-cream: #EBE6DF;      /* Morandi cream - for secondary background */
+
+        /* Functional colors */
+        --morandi-bg: #F5F2F0;         /* Background color - page base */
+        --morandi-text: #5D5D5D;       /* Text color - body text */
+        --morandi-shadow: rgba(171, 168, 164, 0.15); /* Shadow - component shadows */
+
+        /* Themed palette (enhanced) - blue-gold compatible with Morandi */
+        --primary: #4F709C;            /* Primary - for buttons and key areas */
+        --primary-light: #D4E2F4;      /* Primary light - for backgrounds and minor elements */
+        --primary-dark: #395178;       /* Primary dark - for hover/contrast */
+        --primary-gradient: linear-gradient(135deg, #4F709C, #213555); /* Primary gradient */
+
+        --secondary: #D4AF37;          /* Secondary - for highlights and decoration */
+        --secondary-light: #F1E5C2;    /* Secondary light */
+        --secondary-dark: #9E8227;     /* Secondary dark */
+        --secondary-gradient: linear-gradient(135deg, #D4AF37, #AA8C2C); /* Secondary gradient */
+
+        /* Neutrals */
+        --white: #FFFFFF;
+        --gray-50: #F9F9F9;
+        --gray-100: #F3F4F6;
+        --gray-200: #E5E7EB;
+        --gray-300: #D1D5DB;
+        --gray-400: #9CA3AF;
+        --gray-500: #6B7280;
+        --text: #333333;
+        --text-light: #666666;
+
+        /* Status colors */
+        --error: #E86C6C;
+        --error-light: #FFEAEA;
+        --error-dark: #C53030;
+        --success: #34D399;
+        --success-light: #ECFDF5;
+        --warning: #FBBF24;
+        --warning-light: #FEF3C7;
+        --info: #60A5FA;
+        --info-light: #EFF6FF;
+
+        /* Design system variables */
+        --radius-sm: 4px;
+        --radius-md: 8px;
+        --radius-lg: 12px;
+        --radius-full: 9999px;
+
+        --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+        --shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        --shadow-focus: 0 0 0 3px var(--primary-light);
+
+        --transition-fast: 0.15s ease;
+        --transition-normal: 0.3s ease;
+        --transition-slow: 0.5s ease;
+
+        /* Typography */
+        --font-primary: 'Poppins', sans-serif;
+        --font-heading: 'Playfair Display', serif;
+        --font-body: 'Lora', serif;
+      }
+
+      /**
+       * Global style reset & base typography
+       * Establish consistent base styling across the app
+       */
+      body {
+        background-color: var(--morandi-bg);
+        color: var(--morandi-text);
+        font-family: var(--font-body);
+        line-height: 1.6;
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* Heading styles - using Playfair Display for elegant European style */
+      h1, h2, h3, h4, h5, h6 {
+        font-family: var(--font-heading);
+        font-weight: 500;
+        color: var(--morandi-dark);
+        margin-top: 0;
+      }
+
+      /* Link styles */
+      a {
+        color: var(--primary);
+        text-decoration: none;
+        transition: color var(--transition-fast);
+      }
+
+      a:hover {
+        color: var(--primary-dark);
+      }
+
+      /* Container style - consistent page width & padding */
+      .container {
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+
+      /* Main content area - takes up primary page space */
+      main {
+        flex: 1;
+      }
+
+      /* Use simple selectors, avoid deep nesting */
+      .text-center { text-align: center; }
+      .text-primary { color: var(--primary); }
+      .text-secondary { color: var(--secondary); }
+    </style>
+
+    <!-- Custom CSS block - allows child templates to inject CSS -->
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <!-- notification system -->
+    <div id="notification-container"></div>
+
+    <!-- Flash message -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    {% for category, message in messages %}
+                        setTimeout(function() {
+                            showNotification('{{ message }}', '{{ category }}', 5000);
+                        }, {{ loop.index0 * 300 }}); // Each message is delayed by 300ms to prevent overlap
+                    {% endfor %}
+                });
+            </script>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Navbar - fixed top main navigation -->
+    <nav class="navbar">
+        <div class="container navbar-container">
+            <!-- Brand logo -->
+            <div class="navbar-brand">
+                <a href="{{ url_for('index') }}" class="logo">
+                    <span class="logo-icon">🏫</span>
+                    <span class="logo-text">Campus<strong>Community</strong></span>
+                </a>
+            </div>
+
+            <!-- Mobile menu toggle -->
+            <div class="mobile-menu-toggle">
+                <button class="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+
+            <!-- Navigation links -->
+            <div class="navbar-menu">
+                <!-- Main nav -->
+                <ul class="nav-links">
+                    <li><a href="{{ url_for('index') }}"><i class="fas fa-home"></i> Home</a></li>
+                    <li><a href="{{ url_for('about') }}"><i class="fas fa-info-circle"></i> About</a></li>
+                    <li><a href="{{ url_for('contact') }}"><i class="fas fa-envelope"></i> Contact</a></li>
+                </ul>
+
+                <!-- Search form -->
+                <div class="navbar-search">
+                    <form action="{{ url_for('search') }}" method="get" class="search-form">
+                        <input type="text" name="q" placeholder="Search..." class="search-input">
+                        <button type="submit" class="search-button">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- User menu -->
+                <div class="navbar-user">
+                    {% if current_user.is_authenticated %}
+                    <div class="user-dropdown">
+                        <button class="user-btn">
+                            {% if current_user.avatar %}
+                            <img src="{{ url_for('static', filename='uploads/' + current_user.avatar) }}" class="user-avatar" alt="{{ current_user.username }}">
+                            {% else %}
+                            <div class="user-avatar-placeholder">{{ current_user.username|first|upper }}</div>
+                            {% endif %}
+                            <span class="username">{{ current_user.username }}</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+
+                        <!-- User dropdown menu -->
+                        <div class="dropdown-menu">
+                            <a href="{{ url_for('profile', username=current_user.username) }}" class="dropdown-item">
+                                <i class="fas fa-user"></i> My Profile
+                            </a>
+                            <a href="{{ url_for('create_post') }}" class="dropdown-item">
+                                <i class="fas fa-edit"></i> New Post
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="{{ url_for('logout') }}" class="dropdown-item">
+                                <i class="fas fa-sign-out-alt"></i> Log Out
+                            </a>
+                        </div>
+                    </div>
+                    {% else %}
+                    <!-- For guests: show login and signup buttons -->
+                    <div class="auth-buttons">
+                        <a href="{{ url_for('login') }}" class="btn btn-text">Log In</a>
+                        <a href="{{ url_for('signup') }}" class="btn btn-primary">Sign Up</a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main content area - filled by child templates -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Modern refined footer - styled to match login/signup pages -->
+    <footer class="site-footer">
+        <!-- Decorative pattern background -->
+        <div class="footer-pattern"></div>
+
+        <!-- Main content area -->
+        <div class="footer-container">
+            <!-- Content card -->
+            <div class="footer-content-card">
+                <!-- Brand section -->
+                <div class="footer-brand">
+                    <a href="{{ url_for('index') }}" class="footer-logo">
+                        <span class="logo-icon">🏫</span>
+                        <span>Campus<strong>Community</strong></span>
+                    </a>
+                    <p class="footer-tagline">Connect, Share, and Grow Together in our vibrant campus community.</p>
+                </div>
+
+                <!-- Footer nav links -->
+                <div class="footer-nav">
+                    <!-- Navigation group 1 -->
+                    <div class="footer-nav-group">
+                        <h4 class="footer-nav-title">Navigation</h4>
+                        <ul class="footer-nav-list">
+                            <li class="footer-nav-item"><a href="{{ url_for('index') }}"><i class="fas fa-home fa-fw"></i> Home</a></li>
+                            <li class="footer-nav-item"><a href="{{ url_for('about') }}"><i class="fas fa-info-circle fa-fw"></i> About</a></li>
+                            <li class="footer-nav-item"><a href="{{ url_for('contact') }}"><i class="fas fa-envelope fa-fw"></i> Contact</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Navigation group 2 -->
+                    <div class="footer-nav-group">
+                        <h4 class="footer-nav-title">Categories</h4>
+                        <ul class="footer-nav-list">
+                            <li class="footer-nav-item"><a href="{{ url_for('index', category='academic') }}">Academic</a></li>
+                            <li class="footer-nav-item"><a href="{{ url_for('index', category='social') }}">Social</a></li>
+                            <li class="footer-nav-item"><a href="{{ url_for('index', category='events') }}">Events</a></li>
+                            <li class="footer-nav-item"><a href="{{ url_for('index', category='help') }}">Help</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Navigation group 3 -->
+                    <div class="footer-nav-group">
+                        <h4 class="footer-nav-title">Legal</h4>
+                        <ul class="footer-nav-list">
+                            <li class="footer-nav-item"><a href="{{ url_for('terms') }}">Terms of Use</a></li>
+                            <li class="footer-nav-item"><a href="{{ url_for('privacy') }}">Privacy Policy</a></li>
+                            <li class="footer-nav-item"><a href="{{ url_for('community_rules') }}">Community Rules</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Copyright -->
+            <div class="footer-bottom">
+                <div class="container">
+                    <div class="copyright">
+                        &copy; {{ now.year }} Campus Community. All rights reserved | Designed with ❤️
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript - placed at the end for faster page load -->
+    <script>
+        // Mobile menu toggle
+        document.addEventListener('DOMContentLoaded', function() {
+            const hamburger = document.querySelector('.hamburger');
+            const navbarMenu = document.querySelector('.navbar-menu');
+
+            hamburger.addEventListener('click', function() {
+                hamburger.classList.toggle('active');
+                navbarMenu.classList.toggle('active');
+            });
+
+            // User dropdown toggle
+            const userBtn = document.querySelector('.user-btn');
+            if (userBtn) {
+                userBtn.addEventListener('click', function() {
+                    document.querySelector('.dropdown-menu').classList.toggle('active');
+                });
+
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function(event) {
+                    const dropdown = document.querySelector('.user-dropdown');
+                    if (dropdown && !dropdown.contains(event.target)) {
+                        document.querySelector('.dropdown-menu').classList.remove('active');
+                    }
+                });
+            }
+        });
+
+        // Navbar scroll effect
+        const navbar = document.querySelector('.navbar');
+
+        window.addEventListener('scroll', function() {
+            if (window.scrollY > 10) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Notification system
+        function showNotification(message, type = 'info', duration = 3000) {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+
+            // Set icon based on notification type
+            let icon = '';
+            switch(type) {
+                case 'success':
+                    icon = '<i class="fas fa-check-circle"></i>';
+                    break;
+                case 'error':
+                    icon = '<i class="fas fa-times-circle"></i>';
+                    break;
+                case 'warning':
+                    icon = '<i class="fas fa-exclamation-triangle"></i>';
+                    break;
+                default:
+                    icon = '<i class="fas fa-info-circle"></i>';
+            }
+
+            // Set notification content
+            notification.innerHTML = `
+                ${icon}
+                <div class="notification-content">${message}</div>
+            `;
+
+            // Add to container
+            const container = document.getElementById('notification-container');
+            container.appendChild(notification);
+
+            // Show notification
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 10);
+
+            // Auto-remove notification
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    notification.remove();
+                }, 400);
+            }, duration);
+        }
+
+        // Expose notification function globally
+        window.showNotification = showNotification;
+    </script>
+
+    <!-- Extra JS block - allows child templates to inject scripts -->
+    {% block scripts %}{% endblock %}
+</body>
+</html>
