@@ -340,88 +340,39 @@ textarea.form-control {
         {% endif %}
       {% endwith %}
 
-      <form method="POST" class="post-form" enctype="multipart/form-data">
+      <form class="post-form" method="POST" enctype="multipart/form-data">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
 
+        <!-- Title input -->
         <div class="form-group">
-          <label for="title"><i class="fas fa-heading"></i> Title</label>
-          <input
-            type="text"
-            id="title"
-            name="title"
-            class="form-control"
-            placeholder="Enter a compelling title (5-100 characters)"
-            minlength="5"
-            maxlength="100"
-            required
-          >
+            <label for="title"><i class="fas fa-heading"></i> Title</label>
+            <input type="text" id="title" name="title" class="form-control" placeholder="Enter post title" required>
         </div>
-
+        <!-- Category dropdown -->
         <div class="form-group">
-          <label><i class="fas fa-tags"></i> Category</label>
-          <div class="category-pills">
-            <input type="radio" id="cat-general" name="category" value="general" class="category-pill" checked>
-            <label for="cat-general">General</label>
-
-            <input type="radio" id="cat-academic" name="category" value="academic" class="category-pill">
-            <label for="cat-academic">Academic</label>
-
-            <input type="radio" id="cat-social" name="category" value="social" class="category-pill">
-            <label for="cat-social">Social</label>
-
-            <input type="radio" id="cat-events" name="category" value="events" class="category-pill">
-            <label for="cat-events">Events</label>
-
-            <input type="radio" id="cat-help" name="category" value="help" class="category-pill">
-            <label for="cat-help">Help</label>
-
-            <input type="radio" id="cat-help" name="category" value="Māori" class="category-pill">
-            <label for="cat-help">Māori</label>
-
-    
-          </div>
+            <label for="category"><i class="fas fa-tag"></i> Category</label>
+            <select id="category" name="category" class="form-control" required>
+                <option value="academic">Academic</option>
+                <option value="social">Social</option>
+                <option value="events">Events</option>
+                <option value="help">Help</option>
+                <option value="general">General</option>
+                <option value="maori">Māori</option>
+            </select>
         </div>
-
+        <!-- Content input -->
         <div class="form-group">
-          <label for="content"><i class="fas fa-pen-fancy"></i> Content</label>
-          <textarea
-            id="content"
-            name="content"
-            class="form-control"
-            placeholder="Share your thoughts, questions or insights..."
-            minlength="10"
-            required
-          ></textarea>
-          <div class="form-footer">
-            <div class="char-counter"><span id="char-count">0</span>/1000</div>
-            <small><i class="fab fa-markdown"></i> Markdown supported</small>
-          </div>
+            <label for="content"><i class="fas fa-align-left"></i> Content</label>
+            <textarea id="content" name="content" class="form-control" rows="6" placeholder="Write your post here..." required></textarea>
         </div>
-
+        <!-- Image upload -->
         <div class="form-group">
-          <div class="file-upload">
-            <label for="images">
-              <i class="fas fa-cloud-upload-alt" style="font-size: 1.5rem;"></i>
-              <div>
-                <strong>Upload Image</strong>
-                <p>Drag and drop a file here or click to browse</p>
-                <small>Only 1 image allowed (max 2MB)</small>
-              </div>
-            </label>
-            <input type="file" id="images" name="images" accept="image/*">
-          </div>
-          <div id="image-preview" class="image-preview"></div>
+            <label for="images"><i class="fas fa-image"></i> Image (optional)</label>
+            <input type="file" id="images" name="images" class="form-control" accept="image/*">
         </div>
-
-        <div class="form-actions">
-          <a href="{{ url_for('index') }}" class="btn btn-secondary">
-            <i class="fas fa-times"></i> Cancel
-          </a>
-          <button type="submit" class="btn btn-primary">
-            <i class="fas fa-paper-plane"></i> Publish Post
-          </button>
-        </div>
-      </form>
+        <!-- Submit button -->
+        <button type="submit" class="btn btn-primary">Publish Post</button>
+    </form>
     </div>
   </div>
 </div>

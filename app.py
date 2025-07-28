@@ -23,6 +23,7 @@ app.config['SQLALCHEMY_BINDS'] = {
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
 app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg', 'gif'}
+app.config['WTF_CSRF_ENABLED'] = False
 
 # Initialize extensions
 db = SQLAlchemy(app)
@@ -310,12 +311,7 @@ def logout():
 # Main route
 @app.route('/')
 def index():
-    """
-    Home page route - Displays list of posts with pagination and category filtering
-    Equivalent SQL:
-    - All categories: SELECT * FROM post ORDER BY created_at DESC LIMIT 8 OFFSET (page-1)*8
-    - Specific category: SELECT * FROM post WHERE category = :category ORDER BY created_at DESC LIMIT 8 OFFSET (page-1)*8
-    """
+    """Show the home page with posts and category filtering."""
     page = request.args.get('page', 1, type=int)
     category = request.args.get('category', 'all')
 
@@ -345,6 +341,7 @@ def index():
 @app.route('/create_post', methods=['GET', 'POST'])
 @login_required
 def create_post():
+    """Allow logged-in users to create a new post."""
     if request.method == 'POST':
         title = request.form['title'].strip()
         content = request.form['content'].strip()
@@ -390,6 +387,7 @@ def create_post():
 
 @app.route('/post/<int:post_id>')
 def view_post(post_id):
+    """Show a single post and its details."""
     post = Post.query.get_or_404(post_id)
     from datetime import datetime
     return render_template('view_post.html', post=post, now=datetime.utcnow())
@@ -397,6 +395,7 @@ def view_post(post_id):
 @app.route('/post/<int:post_id>/comment', methods=['POST'])
 @login_required
 def add_comment(post_id):
+    """Allow logged-in users to add a comment to a post."""
     """
     Add comment functionality
     Equivalent SQL:
@@ -433,6 +432,7 @@ def add_comment(post_id):
 @app.route('/post/<int:post_id>/like', methods=['POST'])
 @login_required
 def like_post(post_id):
+    """Allow logged-in users to like or unlike a post."""
     """
     Like/Unlike functionality - using Many-To-Many relationship
     Equivalent SQL:
@@ -478,6 +478,7 @@ def like_post(post_id):
 @app.route('/profile/<username>')
 @login_required
 def profile(username):
+    """Show the profile page for a user."""
     user = User.query.filter_by(username=username).first_or_404()
     page = request.args.get('page', 1, type=int)
     posts = Post.query.filter_by(user_id=user.id).order_by(Post.created_at.desc()).paginate(page=page, per_page=5)
@@ -489,6 +490,7 @@ def profile(username):
 
 @app.route('/search')
 def search():
+    """Search for posts and users."""
     query = request.args.get('q', '').strip()
     if query:
         page = request.args.get('page', 1, type=int)
@@ -547,6 +549,11 @@ def contact():
 def community_rules():
     """Community Rules page"""
     return render_template('community_rules.html', now=datetime.now())
+
+@app.route('/faq')
+def faq():
+    """Show the FAQ and help page."""
+    return render_template('faq.html')
 # User profile routes
 
 # Username update and account deletion routes
@@ -574,11 +581,15 @@ def update_username():
 @app.route('/delete_account')
 @login_required
 def delete_account():
+    """Allow a user to permanently delete their account and all data."""
     # Delete all posts by the user
     Post.query.filter_by(user_id=current_user.id).delete()
 
     # Delete all comments by the user
     Comment.query.filter_by(user_id=current_user.id).delete()
+
+    # Delete all likes by the user
+    db.session.execute(likes.delete().where(likes.c.user_id == current_user.id))
 
     # Save user ID so we can access it after deleting the user
     user_id = current_user.id
@@ -598,6 +609,7 @@ def delete_account():
 @app.route('/api/like/<int:post_id>', methods=['POST'])
 @login_required
 def api_like_post(post_id):
+    """AJAX endpoint for liking/unliking a post."""
     """
     AJAX version of like/unlike functionality
     Returns JSON response for client-side processing
@@ -630,6 +642,7 @@ def api_like_post(post_id):
 @app.route('/post/<int:post_id>/delete', methods=['POST'])
 @login_required
 def delete_post(post_id):
+    """Allow the post author to delete their post."""
     """
     Delete Post Function
     1. Check if user is the post author
@@ -675,19 +688,3 @@ if __name__ == '__main__':
     # The database has already been initialized earlier
     port = int(os.environ.get('PORT', 8082))  # Change default port to 8082
     app.run(debug=True, host='0.0.0.0', port=port)
-# Note: The database has already been initialized earlier
-
-
-
-
-
-# Delete confirmation (Nielsen: User control principle)
-@app.route('/delete_post/<int:post_id>', methods=['POST'])
-def delete_post(post_id):
-    # Require explicit confirmation
-    if not request.form.get('confirmation'):
-        abort(400, "Deletion requires confirmation")  # Covered in T19
-    
-    # Proceed with deletion
-    db.execute("DELETE FROM posts WHERE id = ?", (post_id,))
-    return redirect(url_for('index'))
