@@ -1,11 +1,10 @@
 {% extends "base.html" %}
 
-{# Jinja comment: This template displays the details of a single post, including comments and like functionality #}
 {% block content %}
 <div class="container">
-  <!-- Post detail card -->
+  <!-- Post card -->
   <div class="post-detail card">
-    <!-- Post title and metadata section -->
+    <!-- Post title and info -->
     <div class="post-header">
       <span class="category-badge">{{ post.category|default('general') }}</span>
       <h1>{{ post.title }}</h1>
@@ -20,16 +19,16 @@
         </a>
         <span class="date">{{ post.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
 
-        <!-- Add delete button, only visible to post author -->
+        <!-- Delete button for post owner -->
         {% if current_user.is_authenticated and current_user.id == post.user_id %}
           <button id="delete-post-btn" class="delete-btn" title="Delete Post">
             <i class="fas fa-trash-alt"></i> Delete Post
           </button>
         {% endif %}
-      </div> <!-- /.post-meta -->
-    </div> <!-- /.post-header -->
+      </div>
+    </div>
 
-    <!-- Post content section -->
+    <!-- Post text -->
     <div class="post-content">
       <div class="content-preview" id="content-preview">
         {{ post.content[:300] }}
@@ -46,7 +45,7 @@
         <button class="read-less-btn" id="read-less-btn" style="display:none;" onclick="toggleContent()">Read Less</button>
       {% endif %}
 
-      <!-- Post image display area -->
+      <!-- Post pictures -->
       {% if post.images %}
       <div class="post-images">
         <div class="image-gallery">
@@ -58,9 +57,9 @@
         </div>
       </div>
       {% endif %}
-    </div> <!-- /.post-content -->
+    </div>
 
-    <!-- Post footer operation bar - like and view count -->
+    <!-- Like button area -->
     <div class="post-footer">
       <!-- Like button -->
       {% if current_user.is_authenticated %}
@@ -79,23 +78,27 @@
 
       <span class="likes-count"><i class="fas fa-heart"></i> {{ post.likes.count() }} Likes</span>
       <script>
-        // When supported by the database, actual like count will be used here
+        // Like count from database
       </script>
-    </div> <!-- /.post-footer -->
+    </div>
 
-    <!-- Comments section -->
+    <!-- Comments -->
     <div class="comments-section">
       <h3><i class="fas fa-comments"></i> Comments</h3>
 
-      <!-- Comment form - visible only to logged-in users -->
+      <!-- Comment form for logged in users -->
       {% if current_user.is_authenticated %}
         <form method="POST" action="{{ url_for('add_comment', post_id=post.id) }}" class="comment-form">
           <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
           <div class="form-group">
-            <textarea name="content" placeholder="Write your comment..." minlength="3" required></textarea>
+            <textarea id="comment-content" name="content" placeholder="Write your comment..." minlength="3" required></textarea>
+            <div class="comment-footer">
+              <span class="form-text">Share your thoughts</span>
+              <span class="char-counter"><span id="comment-char-count">0</span>/1000</span>
+            </div>
           </div>
           <div class="form-actions">
-            <button type="submit" class="submit-btn">Submit Comment</button>
+            <button type="submit" class="submit-btn" id="comment-submit-btn">Submit Comment</button>
           </div>
         </form>
       {% else %}
@@ -286,6 +289,25 @@
 
   .comment-form .submit-btn:hover {
     background-color: var(--morandi-dark);
+  }
+
+  .comment-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 5px;
+    font-size: 0.875rem;
+    color: var(--morandi-secondary);
+  }
+
+  .char-counter {
+    font-family: monospace;
+    font-size: 0.9rem;
+  }
+
+  .form-text {
+    color: var(--morandi-secondary);
+    font-size: 0.875rem;
   }
 
   .comment {
@@ -579,7 +601,7 @@
     }
   }
 
-  // Client-side enhancement for like functionality
+  // Enhanced client-side like functionality with robust error handling
   document.addEventListener('DOMContentLoaded', function() {
     // Get like form
     const likeForm = document.querySelector('.like-form');
@@ -592,44 +614,139 @@
         const likeIcon = likeBtn.querySelector('i');
         const likeText = likeBtn.querySelector('span');
         const likesCountElement = document.querySelector('.likes-count');
-        const currentLikesText = likesCountElement.textContent;
+        
+        // Prevent multiple rapid clicks
+        if (likeBtn.disabled) return;
+        likeBtn.disabled = true;
+        
+        // Store original state for rollback if needed
+        const originalState = {
+          isLiked: likeBtn.classList.contains('liked'),
+          iconClass: likeIcon.className,
+          text: likeText.textContent,
+          count: parseInt(likesCountElement.textContent.match(/(\d+)/)?.[1] || '0')
+        };
 
-        // Extract current like count
-        const currentLikesMatch = currentLikesText.match(/(\d+)/);
-        let likesCount = currentLikesMatch ? parseInt(currentLikesMatch[1]) : 0;
-
-        // Toggle like status
-        if (likeBtn.classList.contains('liked')) {
+        // Optimistic UI update (immediate visual feedback)
+        let newCount;
+        if (originalState.isLiked) {
           // Unlike
           likeBtn.classList.remove('liked');
           likeIcon.className = 'far fa-heart';
           likeText.textContent = 'Like';
-          if (likesCount > 0) {
-            likesCount--;
-          }
+          newCount = Math.max(0, originalState.count - 1);
         } else {
           // Like
           likeBtn.classList.add('liked');
           likeIcon.className = 'fas fa-heart';
           likeText.textContent = 'Unlike';
-          likesCount++;
+          newCount = originalState.count + 1;
         }
 
-        // Update like count display
-        likesCountElement.innerHTML = '<i class="fas fa-heart"></i> ' + likesCount + ' Likes';
+        // Update like count display with animation
+        likesCountElement.innerHTML = `<i class="fas fa-heart"></i> ${newCount} Likes`;
+        likesCountElement.style.transform = 'scale(1.1)';
+        setTimeout(() => {
+          likesCountElement.style.transform = 'scale(1)';
+        }, 150);
 
-        // Submit form to server
+        // Submit to server with comprehensive error handling
         fetch(this.action, {
           method: 'POST',
           body: new FormData(this),
           headers: {
             'X-Requested-With': 'XMLHttpRequest'
           }
-        }).catch(error => {
-          console.error('Error:', error);
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then(data => {
+          // Server response validation
+          if (data.success) {
+            // Update UI with server-confirmed data
+            likesCountElement.innerHTML = `<i class="fas fa-heart"></i> ${data.likes_count} Likes`;
+            
+            // Show subtle success feedback
+            likeBtn.style.transform = 'scale(1.05)';
+            setTimeout(() => {
+              likeBtn.style.transform = 'scale(1)';
+            }, 200);
+            
+            console.log(`Successfully ${data.action}d post. New count: ${data.likes_count}`);
+          } else {
+            throw new Error('Server reported failure');
+          }
+        })
+        .catch(error => {
+          console.error('Like operation failed:', error);
+          
+          // Rollback UI to original state
+          if (originalState.isLiked) {
+            likeBtn.classList.add('liked');
+          } else {
+            likeBtn.classList.remove('liked');
+          }
+          likeIcon.className = originalState.iconClass;
+          likeText.textContent = originalState.text;
+          likesCountElement.innerHTML = `<i class="fas fa-heart"></i> ${originalState.count} Likes`;
+          
+          // Show error feedback
+          likeBtn.style.backgroundColor = '#ffebee';
+          setTimeout(() => {
+            likeBtn.style.backgroundColor = '';
+          }, 1000);
+          
+          // Show user-friendly error message
+          if (window.showNotification) {
+            window.showNotification('Unable to update like. Please try again.', 'error');
+          }
+        })
+        .finally(() => {
+          // Re-enable button
+          likeBtn.disabled = false;
         });
       });
     }
+    
+    // Optional: Periodic sync to get latest like counts from server
+    // This ensures multi-user like updates are reflected
+    function syncLikeCounts() {
+      const postId = window.location.pathname.match(/\/post\/(\d+)/)?.[1];
+      if (postId) {
+        fetch(`/api/post/${postId}/likes`, {
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+          }
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            const likesCountElement = document.querySelector('.likes-count');
+            if (likesCountElement) {
+              const currentCount = parseInt(likesCountElement.textContent.match(/(\d+)/)?.[1] || '0');
+              if (currentCount !== data.likes_count) {
+                // Update count if it changed (other users liked/unliked)
+                likesCountElement.innerHTML = `<i class="fas fa-heart"></i> ${data.likes_count} Likes`;
+                likesCountElement.style.color = '#e74c3c';
+                setTimeout(() => {
+                  likesCountElement.style.color = '';
+                }, 500);
+              }
+            }
+          }
+        })
+        .catch(error => {
+          console.log('Sync failed (this is normal):', error);
+        });
+      }
+    }
+    
+    // Sync every 30 seconds (optional - can be disabled)
+    // setInterval(syncLikeCounts, 30000);
   });
 </script>
 
@@ -835,5 +952,38 @@ document.getElementById('image-modal').addEventListener('click', function(e) {
     document.body.style.overflow = 'auto';
   }
 });
+
+// Character counter for comment textarea
+const commentTextarea = document.getElementById('comment-content');
+if (commentTextarea) {
+  commentTextarea.addEventListener('input', function(e) {
+    const count = e.target.value.length;
+    const charCount = document.getElementById('comment-char-count');
+    const submitBtn = document.getElementById('comment-submit-btn');
+    
+    charCount.textContent = count;
+
+    // Warning if over limit
+    if(count > 1000) {
+      charCount.style.color = 'var(--error)';
+      charCount.parentElement.style.color = 'var(--error)';
+      submitBtn.disabled = true;
+      submitBtn.style.opacity = '0.5';
+      submitBtn.style.cursor = 'not-allowed';
+    } else if(count > 900) {
+      charCount.style.color = 'orange';
+      charCount.parentElement.style.color = 'orange';
+      submitBtn.disabled = false;
+      submitBtn.style.opacity = '1';
+      submitBtn.style.cursor = 'pointer';
+    } else {
+      charCount.style.color = '';
+      charCount.parentElement.style.color = '';
+      submitBtn.disabled = false;
+      submitBtn.style.opacity = '1';
+      submitBtn.style.cursor = 'pointer';
+    }
+  });
+}
 </script>
 {% endblock %}

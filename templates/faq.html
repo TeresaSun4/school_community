@@ -1,0 +1,353 @@
+{% extends "base.html" %}
+
+{% block title %}FAQ - Help{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1>Help & Questions</h1>
+        <p class="subtitle">Find answers to common questions about our website</p>
+    </div>
+
+    <div class="faq-container">
+        <div class="faq-section">
+            <h2>Account & Registration</h2>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <h3>How do I create an account?</h3>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>Click on the "Sign Up" button in the top navigation. You'll need to provide a username (at least 4 characters), email address, and password. Make sure to use a valid email address as you may need it for account recovery.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <h3>Can I change my username after registration?</h3>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>Yes! You can change your username by going to your profile page and clicking the "Edit Profile" button. Your new username must be unique and at least 4 characters long.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <h3>How do I reset my password?</h3>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>Currently, password reset functionality is not available. If you forget your password, please contact the site administrator. We recommend keeping your password secure and memorable.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="faq-section">
+            <h2>Posts & Content</h2>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <h3>What are the character limits for posts and comments?</h3>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>Posts can be up to <strong>5,000 characters</strong> long, while comments are limited to <strong>1,000 characters</strong>. You'll see a character counter when writing that will warn you as you approach these limits.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <h3>Can I add images to my posts?</h3>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>Yes! You can upload one image per post. Supported formats are PNG, JPG, JPEG, and GIF. Images must be under 2MB in size. Make sure you have the right to use any images you upload.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <h3>What categories can I choose from for my posts?</h3>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>Available categories include: Academic, Social, Events, Help, General, and Māori. Choose the category that best fits your post content to help other users find relevant discussions.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <h3>Can I edit or delete my posts after publishing?</h3>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>You can delete your own posts, but editing is not currently available. When you delete a post, all associated comments and likes will also be removed. Think carefully before posting!</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="faq-section">
+            <h2>Images & Media</h2>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <h3>What are the rules about uploading images?</h3>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>You are fully responsible for all images you upload. Images must be either created by you or used with clear permission from the original owner. Do not upload pictures from the internet unless you have legal rights to use them. Copyright violations may result in content removal.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <h3>Can I upload a profile picture?</h3>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>Yes! You can upload a profile picture from your profile page. The same image responsibility rules apply - make sure you have the right to use the image you choose as your avatar.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="faq-section">
+            <h2>Community Guidelines</h2>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <h3>What content is not allowed on the platform?</h3>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>Prohibited content includes: false or misleading information, content that infringes on others' rights, harmful code/viruses, harassment or threats, and any content that violates applicable laws. Please be respectful and constructive in all interactions.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <h3>How do I report inappropriate content?</h3>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>Currently, there's no built-in reporting system. If you encounter inappropriate content, please contact the site administrator directly. We reserve the right to review and remove content that violates our community guidelines.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="faq-section">
+            <h2>Technical Support</h2>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <h3>The website isn't working properly. What should I do?</h3>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>Try refreshing the page first. If problems persist, try clearing your browser cache or using a different browser. For ongoing technical issues, please contact the site administrator with details about the problem you're experiencing.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <h3>Is my data safe and private?</h3>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>We take your privacy seriously. Please review our Privacy Policy for detailed information about how we collect, use, and protect your personal information. Your posts and comments are visible to other users of the platform.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="faq-footer">
+        <p>Still have questions? <a href="mailto:support@example.com">Contact us</a></p>
+        <p>Last updated: {{ now.strftime('%Y-%m-%d') }}</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block head %}
+<style>
+    /* FAQ page styles */
+    .page-header {
+        margin: 50px 0 40px;
+        text-align: center;
+    }
+
+    .page-header h1 {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.5rem;
+        color: #DAA520;  /* Gold color - consistent with other pages */
+        text-shadow: 0 1px 4px rgba(218, 165, 32, 0.4);
+    }
+
+    .subtitle {
+        font-size: 1.1rem;
+        color: var(--gray-500);
+        margin-top: 10px;
+    }
+
+    .faq-container {
+        background-color: white;
+        border-radius: 12px;
+        padding: 40px;
+        box-shadow: 0 4px 12px var(--morandi-shadow);
+        margin-bottom: 50px;
+    }
+
+    .faq-section {
+        margin-bottom: 40px;
+    }
+
+    .faq-section h2 {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.8rem;
+        color: #DAA520;
+        margin: 30px 0 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid var(--gray-200);
+    }
+
+    .faq-item {
+        margin-bottom: 15px;
+        border: 1px solid var(--gray-200);
+        border-radius: 8px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .faq-item:hover {
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .faq-question {
+        padding: 20px;
+        background: var(--gray-50);
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: background-color 0.3s ease;
+    }
+
+    .faq-question:hover {
+        background: var(--gray-100);
+    }
+
+    .faq-question h3 {
+        margin: 0;
+        font-family: 'Lora', serif;
+        font-size: 1.1rem;
+        color: var(--morandi-dark);
+        font-weight: 600;
+    }
+
+    .faq-question i {
+        color: #DAA520;
+        transition: transform 0.3s ease;
+        font-size: 1rem;
+    }
+
+    .faq-item.active .faq-question i {
+        transform: rotate(180deg);
+    }
+
+    .faq-answer {
+        padding: 0 20px;
+        max-height: 0;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        background: white;
+    }
+
+    .faq-item.active .faq-answer {
+        padding: 20px;
+        max-height: 500px;
+    }
+
+    .faq-answer p {
+        font-family: 'Lora', serif;
+        line-height: 1.7;
+        color: var(--morandi-text);
+        margin: 0;
+    }
+
+    .faq-answer strong {
+        color: #DAA520;
+        font-weight: 600;
+    }
+
+    .faq-footer {
+        text-align: center;
+        color: var(--gray-500);
+        font-size: 0.9rem;
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid var(--gray-200);
+    }
+
+    .faq-footer a {
+        color: #DAA520;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .faq-footer a:hover {
+        text-decoration: underline;
+    }
+
+    @media (max-width: 768px) {
+        .faq-container {
+            padding: 20px;
+        }
+
+        .page-header h1 {
+            font-size: 2rem;
+        }
+
+        .faq-section h2 {
+            font-size: 1.5rem;
+        }
+
+        .faq-question {
+            padding: 15px;
+        }
+
+        .faq-item.active .faq-answer {
+            padding: 15px;
+        }
+    }
+</style>
+
+<script>
+    function toggleFAQ(element) {
+        const faqItem = element.parentElement;
+        const isActive = faqItem.classList.contains('active');
+        
+        // Close all other FAQ items
+        document.querySelectorAll('.faq-item.active').forEach(item => {
+            if (item !== faqItem) {
+                item.classList.remove('active');
+            }
+        });
+        
+        // Toggle current item
+        if (isActive) {
+            faqItem.classList.remove('active');
+        } else {
+            faqItem.classList.add('active');
+        }
+    }
+
+    // Close FAQ when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.faq-item')) {
+            document.querySelectorAll('.faq-item.active').forEach(item => {
+                item.classList.remove('active');
+            });
+        }
+    });
+</script>
+{% endblock %}

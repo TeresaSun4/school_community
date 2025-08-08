@@ -2,7 +2,7 @@
 
 {% block content %}
 <div class="container">
-    <!-- Hero Section -->
+    <!-- Main banner -->
     <section class="hero">
         <div class="hero-content">
             <h1 class="main-title">Campus Community</h1>
@@ -27,7 +27,7 @@
         </div>
     </section>
 
-    <!-- Category Navigation -->
+    <!-- Category buttons -->
     <section class="categories">
         {% if current_user.is_authenticated %}
         <div class="category-header">
@@ -750,18 +750,18 @@
 </style>
 
 <script>
-// Like Functionality JavaScript - Handles user interactions with post likes
+// Like button code
 document.addEventListener('DOMContentLoaded', function() {
-    // Add click event handlers to all like buttons
+    // Find all like buttons
     const likeButtons = document.querySelectorAll('.like-btn-small');
 
-    // Initialize like status based on server data
+    // Set up like buttons when page loads
     likeButtons.forEach(button => {
-        // Get initial like status from button attributes
+        // Check if user already liked this post
         const isLiked = button.dataset.liked === 'true';
         const likeIcon = button.querySelector('i');
 
-        // Ensure correct styling based on like status
+        // Make button look right
         if (isLiked) {
             button.classList.add('liked');
             likeIcon.className = 'fas fa-heart';
@@ -770,7 +770,7 @@ document.addEventListener('DOMContentLoaded', function() {
             likeIcon.className = 'far fa-heart';
         }
 
-        // Add like events only for logged-in users (buttons without onclick attribute)
+        // Add click events for logged in users
         if (!button.hasAttribute('onclick')) {
             button.addEventListener('click', function(e) {
                 e.preventDefault();
@@ -780,11 +780,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 const postId = likeContainer.dataset.postId;
                 const likesCountElement = likeContainer.querySelector('.likes-count-small');
 
-                // Check current like status to determine action
+                // Check if user already liked this
                 const isLiked = this.classList.contains('liked');
                 console.log('Current like status:', isLiked);
 
-                // Toggle like status in the UI
+                // Change button look right away
                 if (isLiked) {
                     this.classList.remove('liked');
                     likeIcon.className = 'far fa-heart';
@@ -795,41 +795,85 @@ document.addEventListener('DOMContentLoaded', function() {
                     this.dataset.liked = 'true';
                 }
 
-                // Send request to server to update like status
-                fetch('/api/like/' + postId, {
+                // Stop user from clicking too fast
+                if (this.disabled) return;
+                this.disabled = true;
+
+                // Store original state for rollback
+                const originalState = {
+                    isLiked: isLiked,
+                    count: parseInt(likesCountElement.textContent.match(/(\d+)/)?.[1] || '0')
+                };
+
+                // Update like count optimistically
+                let newCount = isLiked ? Math.max(0, originalState.count - 1) : originalState.count + 1;
+                likesCountElement.innerHTML = `<i class="fas fa-heart"></i> ${newCount} Likes`;
+
+                // Send request to server using correct endpoint
+                fetch(`/post/${postId}/like`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded',
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'X-CSRFToken': '{{ csrf_token() }}'
+                        'X-Requested-With': 'XMLHttpRequest'
                     },
                     credentials: 'same-origin'
                 })
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
                 .then(data => {
                     console.log('Server response:', data);
                     if (data.success) {
-                        // Update like count displayed to user
-                        if (likesCountElement) {
-                            likesCountElement.textContent = data.likes_count;
-                        }
-
+                        // Update with server-confirmed data
+                        likesCountElement.innerHTML = `<i class="fas fa-heart"></i> ${data.likes_count} Likes`;
+                        
                         // Ensure UI reflects correct server state
                         if (data.action === 'liked') {
                             this.classList.add('liked');
                             likeIcon.className = 'fas fa-heart';
                             this.dataset.liked = 'true';
-
                         } else {
                             this.classList.remove('liked');
                             likeIcon.className = 'far fa-heart';
                             this.dataset.liked = 'false';
-
                         }
+                        
+                        // Visual feedback
+                        this.style.transform = 'scale(1.05)';
+                        setTimeout(() => {
+                            this.style.transform = 'scale(1)';
+                        }, 200);
+                    } else {
+                        throw new Error('Server reported failure');
                     }
                 })
                 .catch(error => {
                     console.error('Like request error:', error);
+                    
+                    // Rollback UI to original state
+                    if (originalState.isLiked) {
+                        this.classList.add('liked');
+                        likeIcon.className = 'fas fa-heart';
+                        this.dataset.liked = 'true';
+                    } else {
+                        this.classList.remove('liked');
+                        likeIcon.className = 'far fa-heart';
+                        this.dataset.liked = 'false';
+                    }
+                    likesCountElement.innerHTML = `<i class="fas fa-heart"></i> ${originalState.count} Likes`;
+                    
+                    // Visual error feedback
+                    this.style.backgroundColor = '#ffebee';
+                    setTimeout(() => {
+                        this.style.backgroundColor = '';
+                    }, 1000);
+                })
+                .finally(() => {
+                    // Re-enable button
+                    this.disabled = false;
                 });
             });
         }

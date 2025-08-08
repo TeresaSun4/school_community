@@ -348,7 +348,7 @@ textarea.form-control {
             <label for="title"><i class="fas fa-heading"></i> Title</label>
             <input type="text" id="title" name="title" class="form-control" placeholder="Enter post title" required>
         </div>
-        <!-- Category dropdown -->
+        <!-- Pick category -->
         <div class="form-group">
             <label for="category"><i class="fas fa-tag"></i> Category</label>
             <select id="category" name="category" class="form-control" required>
@@ -360,17 +360,21 @@ textarea.form-control {
                 <option value="maori">Māori</option>
             </select>
         </div>
-        <!-- Content input -->
+        <!-- Write post -->
         <div class="form-group">
             <label for="content"><i class="fas fa-align-left"></i> Content</label>
             <textarea id="content" name="content" class="form-control" rows="6" placeholder="Write your post here..." required></textarea>
+            <div class="form-footer">
+                <span class="form-text">Share your thoughts with the community</span>
+                <span class="char-counter"><span id="char-count">0</span>/5000</span>
+            </div>
         </div>
-        <!-- Image upload -->
+        <!-- Add picture -->
         <div class="form-group">
             <label for="images"><i class="fas fa-image"></i> Image (optional)</label>
             <input type="file" id="images" name="images" class="form-control" accept="image/*">
         </div>
-        <!-- Submit button -->
+        <!-- Post button -->
         <button type="submit" class="btn btn-primary">Publish Post</button>
     </form>
     </div>
@@ -380,17 +384,36 @@ textarea.form-control {
 
 {% block scripts %}
 <script>
-  // Character counter
+  // Count how many letters user types
   document.getElementById('content').addEventListener('input', function(e) {
     const count = e.target.value.length;
     const charCount = document.getElementById('char-count');
+    const submitBtn = document.querySelector('button[type="submit"]');
+    
     charCount.textContent = count;
 
-    // Warning if over limit
-    if(count > 1000) {
+    // Show warning if content exceeds character limit
+    if(count > 5000) {
+      // Content too long - disable submission
       charCount.style.color = 'var(--error)';
+      charCount.parentElement.style.color = 'var(--error)';
+      submitBtn.disabled = true;  // Prevent form submission
+      submitBtn.style.opacity = '0.5';
+      submitBtn.style.cursor = 'not-allowed';
+    } else if(count > 4500) {
+      // Approaching character limit - show warning
+      charCount.style.color = 'orange';
+      charCount.parentElement.style.color = 'orange';
+      submitBtn.disabled = false;
+      submitBtn.style.opacity = '1';
+      submitBtn.style.cursor = 'pointer';
     } else {
-      charCount.style.color = '';
+      // Content length is acceptable - reset to normal styling
+      charCount.style.color = 'var(--text-muted)';
+      charCount.parentElement.style.color = 'var(--text-muted)';
+      submitBtn.disabled = false;  // Allow form submission
+      submitBtn.style.opacity = '1';
+      submitBtn.style.cursor = 'pointer';
     }
   });
 

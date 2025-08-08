@@ -6,35 +6,33 @@
     <meta name="theme-color" content="#4F709C">
     <title>Campus Community | {% block title %}{% endblock %}</title>
 
-    <!-- Favicon - Use SVG emoji as icon -->
+    <!-- Website icon -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏫</text></svg>">
 
-    <!-- Google Fonts preconnect - improve font loading performance -->
+    <!-- Load fonts faster -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-    <!-- Font loading - Poppins for UI, Lora/Playfair for content -->
+    <!-- Website fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Lora:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- CSS stylesheets - separated by function -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/modern.css') }}">   <!-- Modern layout base -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/design.css') }}">   <!-- Design system -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">   <!-- Custom component styles -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/footer-modern.css') }}">   <!-- Modern footer styles -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar-modern.css') }}">   <!-- Modern navbar styles -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/hero-gold.css') }}">   <!-- Golden hero styles -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/search-gold.css') }}">   <!-- Golden search page -->
+    <!-- Style files -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/modern.css') }}">   <!-- Main layout -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/design.css') }}">   <!-- Colors and design -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">   <!-- Extra styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/footer-modern.css') }}">   <!-- Footer styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar-modern.css') }}">   <!-- Menu styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/hero-gold.css') }}">   <!-- Gold styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/search-gold.css') }}">   <!-- Search page -->
 
-    <!-- Font Awesome Icon Library -->
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-      /**
-       * Design system - color variables
-       * Uses Morandi palette to offer a soft, modern look
-       */
-      /* Notification system styles */
+      /* Website colors */
+      /* Message box styles */
       #notification-container {
         position: fixed;
         top: 80px;
@@ -220,6 +218,234 @@
       .text-center { text-align: center; }
       .text-primary { color: var(--primary); }
       .text-secondary { color: var(--secondary); }
+
+      /* FAQ Help Button & Modal Styles */
+      .faq-help-button {
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        background: var(--primary-gradient);
+        color: white;
+        padding: 12px 20px;
+        border-radius: 50px;
+        cursor: pointer;
+        box-shadow: 0 4px 12px rgba(79, 112, 156, 0.3);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+        z-index: 1000;
+        user-select: none;
+      }
+
+      .faq-help-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(79, 112, 156, 0.4);
+      }
+
+      .faq-help-button i {
+        font-size: 1.1rem;
+      }
+
+      .faq-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 10000;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+      }
+
+      .faq-modal.active {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .faq-modal-content {
+        background: white;
+        border-radius: 12px;
+        width: 90%;
+        max-width: 800px;
+        max-height: 80vh;
+        overflow: hidden;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        transform: scale(0.9);
+        transition: transform 0.3s ease;
+      }
+
+      .faq-modal.active .faq-modal-content {
+        transform: scale(1);
+      }
+
+      .faq-modal-header {
+        background: var(--primary-gradient);
+        color: white;
+        padding: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .faq-modal-header h2 {
+        margin: 0;
+        font-size: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .faq-close-btn {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 2rem;
+        cursor: pointer;
+        padding: 0;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        transition: background-color 0.3s ease;
+      }
+
+      .faq-close-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+      }
+
+      .faq-modal-body {
+        padding: 0;
+        max-height: calc(80vh - 80px);
+        overflow-y: auto;
+      }
+
+
+
+      .faq-categories {
+        padding: 20px;
+      }
+
+      .faq-category {
+        margin-bottom: 30px;
+      }
+
+      .faq-category h3 {
+        color: var(--primary);
+        font-size: 1.2rem;
+        margin: 0 0 15px 0;
+        padding-bottom: 8px;
+        border-bottom: 2px solid var(--primary-light);
+      }
+
+      .faq-items {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .faq-item {
+        border: 1px solid var(--gray-200);
+        border-radius: 8px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+      }
+
+      .faq-item:hover {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .faq-question {
+        padding: 16px;
+        background: var(--gray-50);
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: background-color 0.3s ease;
+      }
+
+      .faq-question:hover {
+        background: var(--gray-100);
+      }
+
+      .faq-question span {
+        font-weight: 600;
+        color: var(--morandi-dark);
+      }
+
+      .faq-question i {
+        color: var(--primary);
+        transition: transform 0.3s ease;
+      }
+
+      .faq-item.active .faq-question i {
+        transform: rotate(180deg);
+      }
+
+      .faq-answer {
+        padding: 0 16px;
+        max-height: 0;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        background: white;
+      }
+
+      .faq-item.active .faq-answer {
+        padding: 16px;
+        max-height: 200px;
+      }
+
+      .faq-answer p {
+        margin: 0;
+        line-height: 1.6;
+        color: var(--morandi-text);
+      }
+
+      .faq-answer strong {
+        color: var(--primary);
+      }
+
+      @media (max-width: 768px) {
+        .faq-help-button {
+          bottom: 15px;
+          left: 15px;
+          padding: 10px 16px;
+          font-size: 0.85rem;
+        }
+
+        .faq-help-button span {
+          display: none;
+        }
+
+        .faq-modal-content {
+          width: 95%;
+          max-height: 90vh;
+        }
+
+        .faq-modal-header {
+          padding: 15px;
+        }
+
+        .faq-modal-header h2 {
+          font-size: 1.3rem;
+        }
+
+
+
+        .faq-categories {
+          padding: 15px;
+        }
+      }
     </style>
 
     <!-- Custom CSS block - allows child templates to inject CSS -->
@@ -391,14 +617,116 @@
                 </div>
             </div>
         </div>
-        <div class="footer-links">
-            <a href="{{ url_for('faq') }}" class="footer-link">FAQ / Help</a>
+        <!-- Floating FAQ/Help Button -->
+        <div class="faq-help-button" onclick="toggleFAQModal()">
+            <i class="fas fa-question-circle"></i>
+            <span>FAQ / Help</span>
+        </div>
+
+        <!-- FAQ Modal -->
+        <div id="faq-modal" class="faq-modal">
+            <div class="faq-modal-content">
+                <div class="faq-modal-header">
+                    <h2><i class="fas fa-question-circle"></i> FAQ & Help</h2>
+                    <button class="faq-close-btn" onclick="toggleFAQModal()">&times;</button>
+                </div>
+                <div class="faq-modal-body">
+                    <div class="faq-categories">
+                        <div class="faq-category">
+                            <h3>Account & Registration</h3>
+                            <div class="faq-items">
+                                <div class="faq-item">
+                                    <div class="faq-question" onclick="toggleFAQItem(this)">
+                                        <span>How do I create an account?</span>
+                                        <i class="fas fa-chevron-down"></i>
+                                    </div>
+                                    <div class="faq-answer">
+                                        <p>Click on the "Sign Up" button in the top navigation. You'll need to provide a username (at least 4 characters), email address, and password.</p>
+                                    </div>
+                                </div>
+                                <div class="faq-item">
+                                    <div class="faq-question" onclick="toggleFAQItem(this)">
+                                        <span>Can I change my username?</span>
+                                        <i class="fas fa-chevron-down"></i>
+                                    </div>
+                                    <div class="faq-answer">
+                                        <p>Yes! Go to your profile page and click "Edit Profile". Your new username must be unique and at least 4 characters long.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="faq-category">
+                            <h3>Posts & Content</h3>
+                            <div class="faq-items">
+                                <div class="faq-item">
+                                    <div class="faq-question" onclick="toggleFAQItem(this)">
+                                        <span>What are the character limits?</span>
+                                        <i class="fas fa-chevron-down"></i>
+                                    </div>
+                                    <div class="faq-answer">
+                                        <p>Posts can be up to <strong>5,000 characters</strong> long, while comments are limited to <strong>1,000 characters</strong>. You'll see a character counter when writing.</p>
+                                    </div>
+                                </div>
+                                <div class="faq-item">
+                                    <div class="faq-question" onclick="toggleFAQItem(this)">
+                                        <span>Can I add images to posts?</span>
+                                        <i class="fas fa-chevron-down"></i>
+                                    </div>
+                                    <div class="faq-answer">
+                                        <p>Yes! You can upload one image per post. Supported formats: PNG, JPG, JPEG, GIF. Max size: 2MB. Make sure you have rights to use the image.</p>
+                                    </div>
+                                </div>
+                                <div class="faq-item">
+                                    <div class="faq-question" onclick="toggleFAQItem(this)">
+                                        <span>Can I edit or delete my posts?</span>
+                                        <i class="fas fa-chevron-down"></i>
+                                    </div>
+                                    <div class="faq-answer">
+                                        <p>You can delete your own posts, but editing is not available. When you delete a post, all comments and likes are also removed.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="faq-category">
+                            <h3>Images & Copyright</h3>
+                            <div class="faq-items">
+                                <div class="faq-item">
+                                    <div class="faq-question" onclick="toggleFAQItem(this)">
+                                        <span>What are the image upload rules?</span>
+                                        <i class="fas fa-chevron-down"></i>
+                                    </div>
+                                    <div class="faq-answer">
+                                        <p>You are fully responsible for all images you upload. Images must be created by you or used with clear permission. Don't upload internet images without legal rights.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="faq-category">
+                            <h3>Technical Support</h3>
+                            <div class="faq-items">
+                                <div class="faq-item">
+                                    <div class="faq-question" onclick="toggleFAQItem(this)">
+                                        <span>The website isn't working properly</span>
+                                        <i class="fas fa-chevron-down"></i>
+                                    </div>
+                                    <div class="faq-answer">
+                                        <p>Try refreshing the page first. If problems persist, clear your browser cache or try a different browser. Contact support if issues continue.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </footer>
 
-    <!-- JavaScript - placed at the end for faster page load -->
+    <!-- JavaScript code -->
     <script>
-        // Mobile menu toggle
+        // Mobile menu button
         document.addEventListener('DOMContentLoaded', function() {
             const hamburger = document.querySelector('.hamburger');
             const navbarMenu = document.querySelector('.navbar-menu');
@@ -408,14 +736,14 @@
                 navbarMenu.classList.toggle('active');
             });
 
-            // User dropdown toggle
+            // User menu button
             const userBtn = document.querySelector('.user-btn');
             if (userBtn) {
                 userBtn.addEventListener('click', function() {
                     document.querySelector('.dropdown-menu').classList.toggle('active');
                 });
 
-                // Close dropdown when clicking outside
+                // Close menu when clicking outside
                 document.addEventListener('click', function(event) {
                     const dropdown = document.querySelector('.user-dropdown');
                     if (dropdown && !dropdown.contains(event.target)) {
@@ -425,55 +753,55 @@
             }
         });
 
-        // Navbar scroll effect
+        // Change navbar appearance when scrolling down the page
         const navbar = document.querySelector('.navbar');
 
         window.addEventListener('scroll', function() {
-            if (window.scrollY > 10) {
+            if (window.scrollY > 10) {  // If user has scrolled down more than 10 pixels
                 navbar.classList.add('scrolled');
             } else {
                 navbar.classList.remove('scrolled');
             }
         });
 
-        // Notification system
+        // Show notification messages to users with appropriate styling
         function showNotification(message, type = 'info', duration = 3000) {
-            // Create notification element
+            // Create the notification element
             const notification = document.createElement('div');
             notification.className = `notification ${type}`;
 
-            // Set icon based on notification type
+            // Choose icon based on message type for better user experience
             let icon = '';
             switch(type) {
                 case 'success':
-                    icon = '<i class="fas fa-check-circle"></i>';
+                    icon = '<i class="fas fa-check-circle"></i>';  // Green checkmark for success
                     break;
                 case 'error':
-                    icon = '<i class="fas fa-times-circle"></i>';
+                    icon = '<i class="fas fa-times-circle"></i>';  // Red X for errors
                     break;
                 case 'warning':
-                    icon = '<i class="fas fa-exclamation-triangle"></i>';
+                    icon = '<i class="fas fa-exclamation-triangle"></i>';  // Yellow triangle for warnings
                     break;
                 default:
-                    icon = '<i class="fas fa-info-circle"></i>';
+                    icon = '<i class="fas fa-info-circle"></i>';  // Blue info icon for general messages
             }
 
-            // Set notification content
+            // Build the HTML for the notification
             notification.innerHTML = `
                 ${icon}
                 <div class="notification-content">${message}</div>
             `;
 
-            // Add to container
+            // Add it to the page
             const container = document.getElementById('notification-container');
             container.appendChild(notification);
 
-            // Show notification
+            // Show message
             setTimeout(() => {
                 notification.classList.add('show');
             }, 10);
 
-            // Auto-remove notification
+            // Remove message after time
             setTimeout(() => {
                 notification.classList.remove('show');
                 setTimeout(() => {
@@ -482,8 +810,60 @@
             }, duration);
         }
 
-        // Expose notification function globally
+        // Make function available everywhere
         window.showNotification = showNotification;
+
+        // Help popup functions
+        function toggleFAQModal() {
+            const modal = document.getElementById('faq-modal');
+            modal.classList.toggle('active');
+            
+            if (modal.classList.contains('active')) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        function toggleFAQItem(element) {
+            const faqItem = element.parentElement;
+            const isActive = faqItem.classList.contains('active');
+            
+            // Close other questions in same group
+            const category = faqItem.closest('.faq-category');
+            category.querySelectorAll('.faq-item.active').forEach(item => {
+                if (item !== faqItem) {
+                    item.classList.remove('active');
+                }
+            });
+            
+            // Open or close this question
+            if (isActive) {
+                faqItem.classList.remove('active');
+            } else {
+                faqItem.classList.add('active');
+            }
+        }
+
+
+
+        // Close help popup when clicking outside
+        document.addEventListener('click', function(e) {
+            const modal = document.getElementById('faq-modal');
+            if (e.target === modal) {
+                toggleFAQModal();
+            }
+        });
+
+        // Close help popup with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                const modal = document.getElementById('faq-modal');
+                if (modal.classList.contains('active')) {
+                    toggleFAQModal();
+                }
+            }
+        });
     </script>
 
     <!-- Extra JS block - allows child templates to inject scripts -->
